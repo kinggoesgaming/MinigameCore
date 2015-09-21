@@ -2,18 +2,6 @@ package me.Flibio.MinigameCore.Economy;
 
 import java.util.UUID;
 
-/*
- * IMPLEMENTATION TODO LIST
- * 
- * setBalance
- * 
- * ---
- * 
- * METHOD TODO LIST
- * 
- * addCurrency
- * subtractCurrency
- */
 public class EconomyManager {
 	
 	public EconomyManager() {
@@ -27,7 +15,7 @@ public class EconomyManager {
 	 * @return
 	 * 	Boolean based on if the method was successful or not
 	 */
-	public boolean setBalance(UUID uuid) {
+	public boolean setBalance(UUID uuid, double amount) {
 		//TODO
 		return false;
 	}

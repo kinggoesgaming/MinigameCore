@@ -3,17 +3,6 @@ package me.Flibio.MinigameCore.Arena;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/*
- * IMPLEMENTATION TODO LIST
- * 
- * createArena
- * deleteArena
- * 
- * ---
- * 
- * METHOD TODO LIST
- * 
- */
 public class ArenaManager {
 	
 	private CopyOnWriteArrayList<Arena> arenas = new CopyOnWriteArrayList<Arena>();

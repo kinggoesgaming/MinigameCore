@@ -1,19 +1,5 @@
 package me.Flibio.MinigameCore.Kits;
 
-/*
- * IMPLEMENTATION TODO LIST
- * 
- * ---
- * 
- * METHOD TODO LIST
- * 
- * addItem
- * removeItem
- * getItems
- * setName
- * getCost
- * setCost
- */
 public class Kit {
 	
 	private String name;

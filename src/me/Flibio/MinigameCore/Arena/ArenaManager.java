@@ -59,6 +59,11 @@ public class ArenaManager {
 	 * 	Boolean based on if the arena was found or not
 	 */
 	public boolean arenaExists(String name) {
-		return getArena(name).isPresent();
+		for(Arena arena : arenas) {
+			if(arena.getArenaName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

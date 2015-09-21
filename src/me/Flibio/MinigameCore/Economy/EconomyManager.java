@@ -32,4 +32,32 @@ public class EconomyManager {
 		return -1;
 	}
 	
+	/**
+	 * Adds currency to a players balance
+	 * @param uuid
+	 * 	UUID of the player whose balance to change
+	 * @param amount
+	 * 	Amount of currency to add to the player
+	 * @return
+	 * 	Boolean based on if the method was successful or not
+	 */
+	public boolean addCurrency(UUID uuid, double amount) {
+		//TODO
+		return false;
+	}
+	
+	/**
+	 * Removes currency from a players balance
+	 * @param uuid
+	 * 	UUID of the player whose balance to change
+	 * @param amount
+	 * 	Amount of currency to remove from the player
+	 * @return
+	 * 	Boolean based on if the method was successful or not
+	 */
+	public boolean removeCurrency(UUID uuid, double amount) {
+		//TODO
+		return false;
+	}
+	
 }

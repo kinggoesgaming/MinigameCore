@@ -3,6 +3,8 @@ package me.Flibio.MinigameCore.Scoreboards;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.spongepowered.api.Game;
+
 public class ScoreboardManager {
 	
 	public enum ScoreboardType {
@@ -11,7 +13,7 @@ public class ScoreboardManager {
 	
 	private CopyOnWriteArrayList<CustomScoreboard> scoreboards = new CopyOnWriteArrayList<CustomScoreboard>();
 	
-	public ScoreboardManager() {
+	public ScoreboardManager(Game game) {
 		
 	}
 	

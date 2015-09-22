@@ -2,9 +2,11 @@ package me.Flibio.MinigameCore.Economy;
 
 import java.util.UUID;
 
+import org.spongepowered.api.Game;
+
 public class EconomyManager {
 	
-	public EconomyManager() {
+	public EconomyManager(Game game) {
 		
 	}
 	

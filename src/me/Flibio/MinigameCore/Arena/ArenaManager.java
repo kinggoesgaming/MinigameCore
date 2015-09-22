@@ -44,7 +44,7 @@ public class ArenaManager {
 	 */
 	public Optional<Arena> getArena(String name) {
 		for(Arena arena : arenas) {
-			if(arena.getArenaName().equalsIgnoreCase(name)) {
+			if(arena.getName().equalsIgnoreCase(name)) {
 				return Optional.of(arena);
 			}
 		}
@@ -60,7 +60,7 @@ public class ArenaManager {
 	 */
 	public boolean arenaExists(String name) {
 		for(Arena arena : arenas) {
-			if(arena.getArenaName().equalsIgnoreCase(name)) {
+			if(arena.getName().equalsIgnoreCase(name)) {
 				return true;
 			}
 		}

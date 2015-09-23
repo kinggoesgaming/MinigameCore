@@ -1,7 +1,8 @@
 package me.Flibio.MinigameCore.Arena;
 
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.google.common.base.Optional;
 
 public class ArenaManager {
 	
@@ -48,7 +49,7 @@ public class ArenaManager {
 				return Optional.of(arena);
 			}
 		}
-		return Optional.empty();
+		return Optional.absent();
 	}
 	
 	/**

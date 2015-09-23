@@ -1,6 +1,5 @@
 package me.Flibio.MinigameCore.Arena;
 
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -12,11 +11,10 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.service.scheduler.Task;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+
+import com.google.common.base.Optional;
 
 public class Arena {
 	
@@ -274,7 +272,7 @@ public class Arena {
 	 */
 	public Optional<Location<World>> getSpawnLocation(String name) {
 		if(!spawnLocations.containsKey(name)) {
-			return Optional.empty();
+			return Optional.absent();
 		}
 		return Optional.of(spawnLocations.get(name));
 	}
@@ -286,10 +284,10 @@ public class Arena {
 	 */
 	public Optional<Location<World>> randomSpawnLocation() {
 		if(spawnLocations.isEmpty()) {
-			return Optional.empty();
+			return Optional.absent();
 		}
 		//TODO
-		return Optional.empty();
+		return Optional.absent();
 	}
 	
 	/**

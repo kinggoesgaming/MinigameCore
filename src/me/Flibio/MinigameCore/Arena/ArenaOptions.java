@@ -29,91 +29,117 @@ public class ArenaOptions {
 	}
 
 	/**
-	 * @return the dedicatedServer
+	 * Checks if the arena is set to dedicated server mode
+	 * @return
+	 * 	If the server is in dedicated server mode
 	 */
 	public boolean isDedicatedServer() {
 		return dedicatedServer;
 	}
 
 	/**
-	 * @param dedicatedServer the dedicatedServer to set
+	 * Changes the dedicated server mode
+	 * @param dedicatedServer
+	 * 	What to set dedicated server mode to
 	 */
 	public void setDedicatedServer(boolean dedicatedServer) {
 		this.dedicatedServer = dedicatedServer;
 	}
 
 	/**
-	 * @return the minPlayers
+	 * Gets the minimum players to start the game
+	 * @return
+	 * 	The amount of minimum players required to start the game
 	 */
 	public int getMinPlayers() {
 		return minPlayers;
 	}
 
 	/**
-	 * @param minPlayers the minPlayers to set
+	 * Sets the amount of minimum players required to start the game
+	 * @param minPlayers
+	 * 	The amount of players required to start the game
 	 */
 	public void setMinPlayers(int minPlayers) {
 		this.minPlayers = minPlayers;
 	}
 
 	/**
-	 * @return the maxPlayers
+	 * Gets the maximum players allowed in a game
+	 * @return
+	 * 	The amount of maximum players allowed in a game
 	 */
 	public int getMaxPlayers() {
 		return maxPlayers;
 	}
 
 	/**
-	 * @param maxPlayers the maxPlayers to set
+	 * Sets the amount of maximum players allowed in a game
+	 * @param maxPlayers
+	 * 	The amount of maximum players allowed in a game
 	 */
 	public void setMaxPlayers(int maxPlayers) {
 		this.maxPlayers = maxPlayers;
 	}
 
 	/**
-	 * @return the lobbyCountdownTime
+	 * Gets the amount of time the lobby will countdown when the minimum player requirements have been met
+	 * @return
+	 * 	The lobby countdown time
 	 */
 	public int getLobbyCountdownTime() {
 		return lobbyCountdownTime;
 	}
 
 	/**
-	 * @param lobbyCountdownTime the lobbyCountdownTime to set
+	 * Sets the amount of time the lobby will countdown when the minimum player requirements have been met
+	 * @param lobbyCountdownTime
+	 * 	The lobby countdown time to set
 	 */
 	public void setLobbyCountdownTime(int lobbyCountdownTime) {
 		this.lobbyCountdownTime = lobbyCountdownTime;
 	}
 
 	/**
-	 * @return the arena name
+	 * Gets the name of the arena
+	 * @return
+	 * 	The name of the arena
 	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * @return the endGameDelay
+	 * Checks if the game will wait 5 seconds after the game ends before teleporting/kicking
+	 * @return
+	 * 	If the game will wait 5 seconds after the game ends before teleporting/kicking
 	 */
 	public boolean isEndGameDelay() {
 		return endGameDelay;
 	}
 
 	/**
-	 * @param endGameDelay the endGameDelay to set
+	 * Sets if the game will wait 5 seconds after the game ends before teleporting/kicking
+	 * @param endGameDelay
+	 * 	If the game will wait 5 seconds after the game ends before teleporting/kicking
 	 */
 	public void setEndGameDelay(boolean endGameDelay) {
 		this.endGameDelay = endGameDelay;
 	}
 
 	/**
-	 * @return the endGameSpectator
+	 * Checks if the game will set players to spectator mode while waiting 5 seconds after the game ends
+	 * @return
+	 *  If the game will set players to spectator mode while waiting 5 seconds after the game ends
 	 */
 	public boolean isEndGameSpectator() {
 		return endGameSpectator;
 	}
 
 	/**
-	 * @param endGameSpectator the endGameSpectator to set
+	 * Sets if the game will set players to spectator mode while waiting 5 seconds after the game ends
+	 * @param endGameSpectator
+	 * 	If the game will set players to spectator mode while waiting 5 seconds after the game ends
 	 */
 	public void setEndGameSpectator(boolean endGameSpectator) {
 		this.endGameSpectator = endGameSpectator;

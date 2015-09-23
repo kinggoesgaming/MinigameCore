@@ -28,41 +28,28 @@ public class Arena {
 		GAME_OVER
 	}
 	
-	private Text GAME_IN_PROGRESS = Texts.builder("The game is currently in progress!").color(TextColors.RED).build();
-	private Text LOBBY_FULL = Texts.builder("The lobby is full!").color(TextColors.RED).build();
-	private Text PLAYER_JOINED = Texts.builder("%name%").color(TextColors.YELLOW).append(Texts.builder(" has joined the game!").color(TextColors.GRAY).build()).build();
-	private Text LOBBY_COUNTDOWN_STARTED = Texts.builder("%time%").color(TextColors.YELLOW).append(Texts.builder(" until the game begins!").color(TextColors.GRAY).build()).build();
-	private Text LOBBY_COUNTDOWN_CANCELLED = Texts.builder("Countdown cancelled!").color(TextColors.RED).build();
-	private Text LOBBY_COUNTDOWN_PROGRESS = Texts.builder("%time%").color(TextColors.YELLOW).append(Texts.builder(" until the game begins!").color(TextColors.GRAY).build()).build();
-	private Text GAME_STARTING = Texts.builder("The game is starting in 5 seconds!").color(TextColors.GREEN).build();
-	private Text GAME_OVER = Texts.builder("The game is over!").color(TextColors.GREEN).build();
-	
 	private Location<World> lobbySpawnLocation;
 	private Location<World> failedJoinLocation;
 	private ConcurrentHashMap<String, Location<World>> spawnLocations = new ConcurrentHashMap<String, Location<World>>();
 	private CopyOnWriteArrayList<Player> onlinePlayers = new CopyOnWriteArrayList<Player>();
-	private String arenaName;
-	private int minPlayers = 0;
-	private int maxPlayers = 0;
 	private Runnable runnable;
 	private Runnable onGameStart;
 	private ArenaState arenaState;
-	private int lobbyCountdown = 30;
 	private int currentLobbyCountdown;
 	private Task lobbyCountdownTask;
 	
-	private boolean dedicatedServer;
+	private ArenaOptions arenaOptions;
 	
 	private Game game;
 	private Object plugin;
 	
 	//TODO - Scoreboard implementation throughout arena
 	public Arena(String arenaName, Game game, Runnable runnable, Object plugin, boolean dedicatedServer, Location<World> lobbySpawnLocation) {
-		this.arenaName = arenaName;
+		this.arenaOptions = new ArenaOptions(arenaName);
 		this.game = game;
 		this.runnable = runnable;
-		this.dedicatedServer = dedicatedServer;
 		this.lobbySpawnLocation = lobbySpawnLocation;
+		arenaOptions.setDedicatedServer(dedicatedServer);
 		
 		game.getEventManager().registerListeners(plugin, this);
 	}
@@ -70,18 +57,18 @@ public class Arena {
 	public void addOnlinePlayer(Player player) {
 		//Check if the game is in the correct state
 		if(arenaState.equals(ArenaState.LOBBY_WAITING)||arenaState.equals(ArenaState.LOBBY_COUNTDOWN)) {
-			if(onlinePlayers.size()>=maxPlayers) {
+			if(onlinePlayers.size()>=arenaOptions.getMaxPlayers()) {
 				//Lobby is full
-				if(dedicatedServer) {
+				if(arenaOptions.isDedicatedServer()) {
 					//Kick the player
-					player.kick(LOBBY_FULL);
+					player.kick(arenaOptions.LOBBY_FULL);
 				} else {
 					//Try to teleport the player to the failed join location
 					if(failedJoinLocation!=null) {
-						player.sendMessage(LOBBY_FULL);
+						player.sendMessage(arenaOptions.LOBBY_FULL);
 						player.setLocation(failedJoinLocation);
 					} else {
-						player.kick(LOBBY_FULL);
+						player.kick(arenaOptions.LOBBY_FULL);
 					}
 				}
 			} else {
@@ -89,30 +76,34 @@ public class Arena {
 				onlinePlayers.add(player);
 				for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
 					//TODO - replace %name% with the player name
-					onlinePlayer.sendMessage(PLAYER_JOINED);
+					onlinePlayer.sendMessage(arenaOptions.PLAYER_JOINED);
 				}
 				player.setLocation(lobbySpawnLocation);
+				if(arenaState.equals(ArenaState.LOBBY_WAITING)&&onlinePlayers.size()>=arenaOptions.getMinPlayers()) {
+					startCountdown();
+				}
 			}
 		} else {
-			if(dedicatedServer) {
+			if(arenaOptions.isDedicatedServer()) {
 				//Kick the player
-				player.kick(GAME_IN_PROGRESS);
+				player.kick(arenaOptions.GAME_IN_PROGRESS);
 			} else {
 				//Try to teleport the player to the failed join location
 				if(failedJoinLocation!=null) {
-					player.sendMessage(GAME_IN_PROGRESS);
+					player.sendMessage(arenaOptions.GAME_IN_PROGRESS);
 					player.setLocation(failedJoinLocation);
 				} else {
-					player.kick(GAME_IN_PROGRESS);
+					player.kick(arenaOptions.GAME_IN_PROGRESS);
 				}
 			}
 		}
 	}
 	
 	public void removeOnlinePlayer(Player player) {
-		/*TODO
-		 * Disconnect Message
-		 */
+		//TODO disconnect message
+		if(arenaState.equals(ArenaState.LOBBY_COUNTDOWN)&&onlinePlayers.size()<arenaOptions.getMinPlayers()) {
+			cancelCountdown();
+		}
 		onlinePlayers.remove(player);
 	}
 	
@@ -128,14 +119,6 @@ public class Arena {
 		//TODO - Make a boolean and do checks
 		game.getScheduler().createTaskBuilder().execute(new Runnable() {
 			public void run() {
-				if(onlinePlayers.size()<minPlayers&&arenaState.equals(ArenaState.LOBBY_COUNTDOWN)) {
-					//Cancel the countdown
-					cancelCountdown();
-				}
-				if(onlinePlayers.size()>=minPlayers&&arenaState.equals(ArenaState.LOBBY_WAITING)) {
-					//Start the countdown
-					startCountdown();
-				}
 				runnable.run();
 			}
 		}).async().interval(1).submit(plugin);
@@ -143,12 +126,12 @@ public class Arena {
 	
 	//Lobby Control Methods
 	
-	private void startCountdown() {
-		currentLobbyCountdown = lobbyCountdown;
+	public void startCountdown() {
+		currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
 		arenaState = ArenaState.LOBBY_COUNTDOWN;
 		for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
 			//TODO - replace %time% with the seconds to go
-			onlinePlayer.sendMessage(LOBBY_COUNTDOWN_STARTED);
+			onlinePlayer.sendMessage(arenaOptions.LOBBY_COUNTDOWN_STARTED);
 		}
 		//Register task the run the countdown every 1 second
 		lobbyCountdownTask = game.getScheduler().createTaskBuilder().execute(new Runnable() {
@@ -158,37 +141,37 @@ public class Arena {
 					lobbyCountdownTask.cancel();
 					return;
 				}
-				if(lobbyCountdown/2==currentLobbyCountdown||currentLobbyCountdown<=10) {
+				if(arenaOptions.getLobbyCountdownTime()/2==currentLobbyCountdown||currentLobbyCountdown<=10) {
 					//Send a message
 					for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
 						//TODO - replace %time% with the seconds to go
-						onlinePlayer.sendMessage(LOBBY_COUNTDOWN_PROGRESS);
+						onlinePlayer.sendMessage(arenaOptions.LOBBY_COUNTDOWN_PROGRESS);
 					}
 				}
 				currentLobbyCountdown--;
 			}
-		}).async().interval(20).submit(plugin);
+		}).async().interval(1,TimeUnit.SECONDS).submit(plugin);
 	}
 	
-	private void cancelCountdown() {
-		currentLobbyCountdown = lobbyCountdown;
+	public void cancelCountdown() {
+		currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
 		if(lobbyCountdownTask!=null) {
 			lobbyCountdownTask.cancel();
 		}
 		arenaState = ArenaState.LOBBY_WAITING;
 		for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-			onlinePlayer.sendMessage(LOBBY_COUNTDOWN_CANCELLED);
+			onlinePlayer.sendMessage(arenaOptions.LOBBY_COUNTDOWN_CANCELLED);
 		}
 	}
 	
 	//Game Control Methods
 	
-	private void startGame() {
-		currentLobbyCountdown = lobbyCountdown;
+	public void startGame() {
+		currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
 		arenaState = ArenaState.GAME_COUNTDOWN;
 		//Send a message
 		for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-			onlinePlayer.sendMessage(GAME_STARTING);
+			onlinePlayer.sendMessage(arenaOptions.GAME_STARTING);
 		}
 		if(onGameStart!=null) {
 			onGameStart.run();
@@ -198,23 +181,45 @@ public class Arena {
 	public void endGame() {
 		arenaState = ArenaState.GAME_OVER;
 		for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-			onlinePlayer.sendMessage(GAME_OVER);
-			//TODO - Save the gamemode and load again after 5 seconds
-			onlinePlayer.offer(Keys.GAME_MODE,GameModes.SPECTATOR);
+			onlinePlayer.sendMessage(arenaOptions.GAME_OVER);
+			//End game spectator only works with end game delay on
+			if(arenaOptions.isEndGameDelay()&&arenaOptions.isEndGameSpectator()) {
+				//TODO - Save the gamemode
+				onlinePlayer.offer(Keys.GAME_MODE,GameModes.SPECTATOR);
+			}
 		}
-		game.getScheduler().createTaskBuilder().execute(new Runnable() {
-			public void run() {
-				for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-					onlinePlayer.sendMessage(GAME_OVER);
-					onlinePlayer.offer(Keys.GAME_MODE,GameModes.SURVIVAL);
-					if(dedicatedServer) {
-						onlinePlayer.kick(GAME_OVER);
-					} else {
-						onlinePlayer.setLocation(lobbySpawnLocation);
+		if(arenaOptions.isEndGameDelay()) {
+			game.getScheduler().createTaskBuilder().execute(new Runnable() {
+				public void run() {
+					for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
+						onlinePlayer.sendMessage(arenaOptions.GAME_OVER);
+						if(arenaOptions.isEndGameSpectator()) {
+							//TODO load the gamemode
+							onlinePlayer.offer(Keys.GAME_MODE,GameModes.SURVIVAL);
+						}
+						if(arenaOptions.isDedicatedServer()) {
+							onlinePlayer.kick(arenaOptions.GAME_OVER);
+						} else {
+							onlinePlayer.setLocation(lobbySpawnLocation);
+						}
 					}
 				}
+			}).async().delay(5,TimeUnit.SECONDS).submit(plugin);
+		} else {
+			//No delay
+			for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
+				onlinePlayer.sendMessage(arenaOptions.GAME_OVER);
+				if(arenaOptions.isEndGameSpectator()) {
+					//TODO load the gamemode
+					onlinePlayer.offer(Keys.GAME_MODE,GameModes.SURVIVAL);
+				}
+				if(arenaOptions.isDedicatedServer()) {
+					onlinePlayer.kick(arenaOptions.GAME_OVER);
+				} else {
+					onlinePlayer.setLocation(lobbySpawnLocation);
+				}
 			}
-		}).async().delay(5,TimeUnit.SECONDS).submit(plugin);
+		}
 	}
 	
 	//Spawn Locations
@@ -287,6 +292,13 @@ public class Arena {
 		return Optional.empty();
 	}
 	
+	/**
+	 * Disperses the players among all the spawn locations
+	 */
+	public void dispersePlayers() {
+		//TODO
+	}
+	
 	//Other Arena Properties
 	
 	/**
@@ -299,75 +311,19 @@ public class Arena {
 	}
 	
 	/**
-	 * Sets how long a lobby will wait for when the lobby reaches the minimum amount of players
-	 * @param lobbyCountdown
-	 * 	The amount of seconds a lobby will countdown for
-	 */
-	public void setLobbyCountdownTime(int lobbyCountdown) {
-		this.lobbyCountdown = lobbyCountdown;
-	}
-	
-	/**
-	 * Gets the minimum amount of players in a lobby
+	 * Gets the set of arena options
 	 * @return
+	 * 	The ArenaOptions
 	 */
-	public int getMinPlayers() {
-		return minPlayers;
+	public ArenaOptions getOptions() {
+		return this.arenaOptions;
 	}
-	
-	/**
-	 * Sets the minimum amount of players allowed in an arena
-	 * @param minPlayers
-	 * 	The minimum amount of players allowed in the arena
-	 * @return
-	 * 	Boolean based on if the method was successful or not
-	 */
-	public boolean setMinPlayers(int minPlayers) {
-		if(minPlayers<0) {
-			return false;
-		}
-		this.minPlayers = minPlayers;
-		return true;
-	}
-	
-	/**
-	 * Sets the maximum amount of players allowed in an arena
-	 * @param maxPlayers
-	 * 	The maximum players allowed in the arena
-	 * @return
-	 * 	Boolean based on if the method was successful or not
-	 */
-	public boolean setMaxPlayers(int maxPlayers) {
-		if(maxPlayers<0) {
-			return false;
-		}
-		this.maxPlayers = maxPlayers;
-		return true;
-	}
-	
-	/**
-	 * Gets the maxiumum amount of players allowed in a lobby
-	 * @return
-	 * 	The maximum amount of players in a lobby
-	 */
-	public int getMaxPlayers() {
-		return maxPlayers;
-	}
-	
-	/**
-	 * Gets the name of the arena
-	 * @return
-	 * 	The name of the arena
-	 */
-	public String getName() {
-		return arenaName;
-	}
-	
+
 	//Listeners
 	
 	@Listener
 	public void onPlayerDisconnect(ClientConnectionEvent.Disconnect event) {
-		if(dedicatedServer) {
+		if(arenaOptions.isDedicatedServer()) {
 			Player player = event.getTargetEntity();
 			removeOnlinePlayer(player);
 		}
@@ -375,7 +331,7 @@ public class Arena {
 	
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event) {
-		if(dedicatedServer) {
+		if(arenaOptions.isDedicatedServer()) {
 			Player player = event.getTargetEntity();
 			addOnlinePlayer(player);
 		}

@@ -7,5 +7,3 @@ If you have a feature you would like to see added to MinigameCore, fell free to 
 
 ###Submitting Feature Requests
 If you have a feature you would like to see added to MinigameCore, but don't have time to implement the feature yourself, simply create an issue and describe the feature in detail. Someone will pickup your idea and implement it into MinigameCore!
-
-**MinigameCore is in early Alpha and is currently not ready to receive pull requests**

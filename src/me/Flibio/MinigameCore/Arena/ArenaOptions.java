@@ -1,4 +1,4 @@
-package me.Flibio.MinigameCore.Arena;
+package me.flibio.minigamecore.arena;
 
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
@@ -7,14 +7,22 @@ import org.spongepowered.api.text.format.TextColors;
 public class ArenaOptions {
 	
 	//Text Customization Options
-	public Text GAME_IN_PROGRESS = Texts.builder("The game is currently in progress!").color(TextColors.RED).build();
-	public Text LOBBY_FULL = Texts.builder("The lobby is full!").color(TextColors.RED).build();
-	public Text PLAYER_JOINED = Texts.builder("%name%").color(TextColors.YELLOW).append(Texts.builder(" has joined the game!").color(TextColors.GRAY).build()).build();
-	public Text LOBBY_COUNTDOWN_STARTED = Texts.builder("%time%").color(TextColors.YELLOW).append(Texts.builder(" until the game begins!").color(TextColors.GRAY).build()).build();
-	public Text LOBBY_COUNTDOWN_CANCELLED = Texts.builder("Countdown cancelled!").color(TextColors.RED).build();
-	public Text LOBBY_COUNTDOWN_PROGRESS = Texts.builder("%time%").color(TextColors.YELLOW).append(Texts.builder(" until the game begins!").color(TextColors.GRAY).build()).build();
-	public Text GAME_STARTING = Texts.builder("The game is starting in 5 seconds!").color(TextColors.GREEN).build();
-	public Text GAME_OVER = Texts.builder("The game is over!").color(TextColors.GREEN).build();
+	public Text gameInProgress = Texts.builder("The game is currently in progress!")
+			.color(TextColors.RED).build();
+	public Text lobbyFull = Texts.builder("The lobby is full!").color(TextColors.RED).build();
+	public Text playerJoined = Texts.builder("%name%").color(TextColors.YELLOW)
+			.append(Texts.builder(" has joined the game!").color(TextColors.GRAY).build()).build();
+	public Text lobbyCountdownStarted = Texts.builder("%time%").color(TextColors.YELLOW)
+			.append(Texts.builder(" until the game begins!")
+			.color(TextColors.GRAY).build()).build();
+	public Text lobbyCountdownCancelled = Texts.builder("Countdown cancelled!")
+			.color(TextColors.RED).build();
+	public Text lobbyCountdownProgress = Texts.builder("%time%").color(TextColors.YELLOW)
+			.append(Texts.builder(" until the game begins!")
+			.color(TextColors.GRAY).build()).build();
+	public Text gameStarting = Texts.builder("The game is starting in 5 seconds!")
+			.color(TextColors.GREEN).build();
+	public Text gameOver = Texts.builder("The game is over!").color(TextColors.GREEN).build();
 	
 	private boolean dedicatedServer = true;
 	private int minPlayers = 0;
@@ -83,7 +91,8 @@ public class ArenaOptions {
 	}
 
 	/**
-	 * Gets the amount of time the lobby will countdown when the minimum player requirements have been met
+	 * Gets the amount of time the lobby will countdown when
+	 * the minimum player requirements have been met
 	 * @return
 	 * 	The lobby countdown time
 	 */
@@ -92,7 +101,8 @@ public class ArenaOptions {
 	}
 
 	/**
-	 * Sets the amount of time the lobby will countdown when the minimum player requirements have been met
+	 * Sets the amount of time the lobby will countdown when
+	 * the minimum player requirements have been met
 	 * @param lobbyCountdownTime
 	 * 	The lobby countdown time to set
 	 */
@@ -128,7 +138,8 @@ public class ArenaOptions {
 	}
 
 	/**
-	 * Checks if the game will set players to spectator mode while waiting 5 seconds after the game ends
+	 * Checks if the game will set players to spectator mode while
+	 * waiting 5 seconds after the game ends
 	 * @return
 	 *  If the game will set players to spectator mode while waiting 5 seconds after the game ends
 	 */
@@ -137,7 +148,8 @@ public class ArenaOptions {
 	}
 
 	/**
-	 * Sets if the game will set players to spectator mode while waiting 5 seconds after the game ends
+	 * Sets if the game will set players to spectator mode while
+	 * waiting 5 seconds after the game ends
 	 * @param endGameSpectator
 	 * 	If the game will set players to spectator mode while waiting 5 seconds after the game ends
 	 */

@@ -1,10 +1,10 @@
-package me.Flibio.MinigameCore.Main;
+package me.flibio.minigamecore.main;
 
-import me.Flibio.MinigameCore.Arena.ArenaManager;
-import me.Flibio.MinigameCore.Economy.EconomyManager;
-import me.Flibio.MinigameCore.FileManagement.FileManager;
-import me.Flibio.MinigameCore.Kits.KitManager;
-import me.Flibio.MinigameCore.Scoreboards.ScoreboardManager;
+import me.flibio.minigamecore.arena.ArenaManager;
+import me.flibio.minigamecore.economy.EconomyManager;
+import me.flibio.minigamecore.file.FileManager;
+import me.flibio.minigamecore.kits.KitManager;
+import me.flibio.minigamecore.scoreboards.ScoreboardManager;
 
 import org.spongepowered.api.Game;
 

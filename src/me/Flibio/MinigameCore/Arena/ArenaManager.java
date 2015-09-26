@@ -1,4 +1,4 @@
-package me.Flibio.MinigameCore.Arena;
+package me.flibio.minigamecore.arena;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -44,8 +44,8 @@ public class ArenaManager {
 	 * 	Boolean based on if the arena was found or not
 	 */
 	public Optional<Arena> getArena(String name) {
-		for(Arena arena : arenas) {
-			if(arena.getOptions().getName().equalsIgnoreCase(name)) {
+		for (Arena arena : arenas) {
+			if (arena.getOptions().getName().equalsIgnoreCase(name)) {
 				return Optional.of(arena);
 			}
 		}
@@ -60,8 +60,8 @@ public class ArenaManager {
 	 * 	Boolean based on if the arena was found or not
 	 */
 	public boolean arenaExists(String name) {
-		for(Arena arena : arenas) {
-			if(arena.getOptions().getName().equalsIgnoreCase(name)) {
+		for (Arena arena : arenas) {
+			if (arena.getOptions().getName().equalsIgnoreCase(name)) {
 				return true;
 			}
 		}

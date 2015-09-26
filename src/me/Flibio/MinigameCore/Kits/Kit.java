@@ -1,4 +1,4 @@
-package me.Flibio.MinigameCore.Kits;
+package me.flibio.minigamecore.kits;
 
 public class Kit {
 	

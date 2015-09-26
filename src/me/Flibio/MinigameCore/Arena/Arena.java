@@ -1,4 +1,4 @@
-package me.Flibio.MinigameCore.Arena;
+package me.flibio.minigamecore.arena;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -18,17 +18,13 @@ import com.google.common.base.Optional;
 
 public class Arena {
 	
-	public enum ArenaState {
-		LOBBY_WAITING,
-		LOBBY_COUNTDOWN,
-		GAME_COUNTDOWN,
-		GAME_PLAYING,
-		GAME_OVER
-	}
+	public enum ArenaState { LOBBY_WAITING, LOBBY_COUNTDOWN, GAME_COUNTDOWN, GAME_PLAYING,
+		GAME_OVER }
 	
 	private Location<World> lobbySpawnLocation;
 	private Location<World> failedJoinLocation;
-	private ConcurrentHashMap<String, Location<World>> spawnLocations = new ConcurrentHashMap<String, Location<World>>();
+	private ConcurrentHashMap<String, Location<World>> spawnLocations =
+			new ConcurrentHashMap<String, Location<World>>();
 	private CopyOnWriteArrayList<Player> onlinePlayers = new CopyOnWriteArrayList<Player>();
 	private Runnable runnable;
 	private Runnable onGameStart;
@@ -42,7 +38,8 @@ public class Arena {
 	private Object plugin;
 	
 	//TODO - Scoreboard implementation throughout arena
-	public Arena(String arenaName, Game game, Runnable runnable, Object plugin, boolean dedicatedServer, Location<World> lobbySpawnLocation) {
+	public Arena(String arenaName, Game game, Runnable runnable, Object plugin,
+			boolean dedicatedServer, Location<World> lobbySpawnLocation) {
 		this.arenaOptions = new ArenaOptions(arenaName);
 		this.game = game;
 		this.runnable = runnable;
@@ -53,45 +50,47 @@ public class Arena {
 	}
 	
 	public void addOnlinePlayer(Player player) {
-		//Check if the game is in the correct state
-		if(arenaState.equals(ArenaState.LOBBY_WAITING)||arenaState.equals(ArenaState.LOBBY_COUNTDOWN)) {
-			if(onlinePlayers.size()>=arenaOptions.getMaxPlayers()) {
+		//Check if  the game is in the correct state
+		if (arenaState.equals(ArenaState.LOBBY_WAITING)||
+				arenaState.equals(ArenaState.LOBBY_COUNTDOWN)) {
+			if (onlinePlayers.size()>=arenaOptions.getMaxPlayers()) {
 				//Lobby is full
-				if(arenaOptions.isDedicatedServer()) {
+				if (arenaOptions.isDedicatedServer()) {
 					//Kick the player
-					player.kick(arenaOptions.LOBBY_FULL);
+					player.kick(arenaOptions.lobbyFull);
 				} else {
 					//Try to teleport the player to the failed join location
-					if(failedJoinLocation!=null) {
-						player.sendMessage(arenaOptions.LOBBY_FULL);
+					if (failedJoinLocation!=null) {
+						player.sendMessage(arenaOptions.lobbyFull);
 						player.setLocation(failedJoinLocation);
 					} else {
-						player.kick(arenaOptions.LOBBY_FULL);
+						player.kick(arenaOptions.lobbyFull);
 					}
 				}
 			} else {
 				//Player can join
 				onlinePlayers.add(player);
-				for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
+				for (Player onlinePlayer : game.getServer().getOnlinePlayers()) {
 					//TODO - replace %name% with the player name
-					onlinePlayer.sendMessage(arenaOptions.PLAYER_JOINED);
+					onlinePlayer.sendMessage(arenaOptions.playerJoined);
 				}
 				player.setLocation(lobbySpawnLocation);
-				if(arenaState.equals(ArenaState.LOBBY_WAITING)&&onlinePlayers.size()>=arenaOptions.getMinPlayers()) {
+				if (arenaState.equals(ArenaState.LOBBY_WAITING)&&
+						onlinePlayers.size()>=arenaOptions.getMinPlayers()) {
 					startCountdown();
 				}
 			}
 		} else {
-			if(arenaOptions.isDedicatedServer()) {
+			if (arenaOptions.isDedicatedServer()) {
 				//Kick the player
-				player.kick(arenaOptions.GAME_IN_PROGRESS);
+				player.kick(arenaOptions.gameInProgress);
 			} else {
 				//Try to teleport the player to the failed join location
-				if(failedJoinLocation!=null) {
-					player.sendMessage(arenaOptions.GAME_IN_PROGRESS);
+				if (failedJoinLocation!=null) {
+					player.sendMessage(arenaOptions.gameInProgress);
 					player.setLocation(failedJoinLocation);
 				} else {
-					player.kick(arenaOptions.GAME_IN_PROGRESS);
+					player.kick(arenaOptions.gameInProgress);
 				}
 			}
 		}
@@ -99,7 +98,8 @@ public class Arena {
 	
 	public void removeOnlinePlayer(Player player) {
 		//TODO disconnect message
-		if(arenaState.equals(ArenaState.LOBBY_COUNTDOWN)&&onlinePlayers.size()<arenaOptions.getMinPlayers()) {
+		if (arenaState.equals(ArenaState.LOBBY_COUNTDOWN)&&
+				onlinePlayers.size()<arenaOptions.getMinPlayers()) {
 			cancelCountdown();
 		}
 		onlinePlayers.remove(player);
@@ -111,11 +111,13 @@ public class Arena {
 	
 	
 	/**
-	 * Initializes the arena. This starts the game clock with the runnable provided in the Arena constructor. The runnable runs on a seperate thread every 1 tick.
+	 * Initializes the arena. This starts the game clock withthe runnable provided in the
+	 * Arena constructor. The runnable runs on a seperate thread every 1 tick.
 	 */
 	public void initializeArena() {
 		//TODO - Make a boolean and do checks
 		game.getScheduler().createTaskBuilder().execute(new Runnable() {
+			@Override
 			public void run() {
 				runnable.run();
 			}
@@ -127,23 +129,25 @@ public class Arena {
 	public void startCountdown() {
 		currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
 		arenaState = ArenaState.LOBBY_COUNTDOWN;
-		for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
+		for (Player onlinePlayer : game.getServer().getOnlinePlayers()) {
 			//TODO - replace %time% with the seconds to go
-			onlinePlayer.sendMessage(arenaOptions.LOBBY_COUNTDOWN_STARTED);
+			onlinePlayer.sendMessage(arenaOptions.lobbyCountdownStarted);
 		}
 		//Register task the run the countdown every 1 second
 		lobbyCountdownTask = game.getScheduler().createTaskBuilder().execute(new Runnable() {
+			@Override
 			public void run() {
-				if(currentLobbyCountdown==0) {
+				if (currentLobbyCountdown==0) {
 					startGame();
 					lobbyCountdownTask.cancel();
 					return;
 				}
-				if(arenaOptions.getLobbyCountdownTime()/2==currentLobbyCountdown||currentLobbyCountdown<=10) {
+				if (arenaOptions.getLobbyCountdownTime()/2==currentLobbyCountdown||
+						currentLobbyCountdown<=10) {
 					//Send a message
-					for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
+					for (Player onlinePlayer : game.getServer().getOnlinePlayers()) {
 						//TODO - replace %time% with the seconds to go
-						onlinePlayer.sendMessage(arenaOptions.LOBBY_COUNTDOWN_PROGRESS);
+						onlinePlayer.sendMessage(arenaOptions.lobbyCountdownProgress);
 					}
 				}
 				currentLobbyCountdown--;
@@ -153,12 +157,12 @@ public class Arena {
 	
 	public void cancelCountdown() {
 		currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
-		if(lobbyCountdownTask!=null) {
+		if (lobbyCountdownTask!=null) {
 			lobbyCountdownTask.cancel();
 		}
 		arenaState = ArenaState.LOBBY_WAITING;
-		for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-			onlinePlayer.sendMessage(arenaOptions.LOBBY_COUNTDOWN_CANCELLED);
+		for (Player onlinePlayer : game.getServer().getOnlinePlayers()) {
+			onlinePlayer.sendMessage(arenaOptions.lobbyCountdownCancelled);
 		}
 	}
 	
@@ -168,35 +172,36 @@ public class Arena {
 		currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
 		arenaState = ArenaState.GAME_COUNTDOWN;
 		//Send a message
-		for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-			onlinePlayer.sendMessage(arenaOptions.GAME_STARTING);
+		for (Player onlinePlayer : game.getServer().getOnlinePlayers()) {
+			onlinePlayer.sendMessage(arenaOptions.gameStarting);
 		}
-		if(onGameStart!=null) {
+		if (onGameStart!=null) {
 			onGameStart.run();
 		}
 	}
 	
 	public void endGame() {
 		arenaState = ArenaState.GAME_OVER;
-		for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-			onlinePlayer.sendMessage(arenaOptions.GAME_OVER);
+		for (Player onlinePlayer : game.getServer().getOnlinePlayers()) {
+			onlinePlayer.sendMessage(arenaOptions.gameOver);
 			//End game spectator only works with end game delay on
-			if(arenaOptions.isEndGameDelay()&&arenaOptions.isEndGameSpectator()) {
+			if (arenaOptions.isEndGameDelay()&&arenaOptions.isEndGameSpectator()) {
 				//TODO - Save the gamemode
 				onlinePlayer.offer(Keys.GAME_MODE,GameModes.SPECTATOR);
 			}
 		}
-		if(arenaOptions.isEndGameDelay()) {
+		if (arenaOptions.isEndGameDelay()) {
 			game.getScheduler().createTaskBuilder().execute(new Runnable() {
+				@Override
 				public void run() {
-					for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-						onlinePlayer.sendMessage(arenaOptions.GAME_OVER);
-						if(arenaOptions.isEndGameSpectator()) {
+					for (Player onlinePlayer : game.getServer().getOnlinePlayers()) {
+						onlinePlayer.sendMessage(arenaOptions.gameOver);
+						if (arenaOptions.isEndGameSpectator()) {
 							//TODO load the gamemode
 							onlinePlayer.offer(Keys.GAME_MODE,GameModes.SURVIVAL);
 						}
-						if(arenaOptions.isDedicatedServer()) {
-							onlinePlayer.kick(arenaOptions.GAME_OVER);
+						if (arenaOptions.isDedicatedServer()) {
+							onlinePlayer.kick(arenaOptions.gameOver);
 						} else {
 							onlinePlayer.setLocation(lobbySpawnLocation);
 						}
@@ -205,14 +210,14 @@ public class Arena {
 			}).async().delay(5,TimeUnit.SECONDS).submit(plugin);
 		} else {
 			//No delay
-			for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-				onlinePlayer.sendMessage(arenaOptions.GAME_OVER);
-				if(arenaOptions.isEndGameSpectator()) {
+			for (Player onlinePlayer : game.getServer().getOnlinePlayers()) {
+				onlinePlayer.sendMessage(arenaOptions.gameOver);
+				if (arenaOptions.isEndGameSpectator()) {
 					//TODO load the gamemode
 					onlinePlayer.offer(Keys.GAME_MODE,GameModes.SURVIVAL);
 				}
-				if(arenaOptions.isDedicatedServer()) {
-					onlinePlayer.kick(arenaOptions.GAME_OVER);
+				if (arenaOptions.isDedicatedServer()) {
+					onlinePlayer.kick(arenaOptions.gameOver);
 				} else {
 					onlinePlayer.setLocation(lobbySpawnLocation);
 				}
@@ -238,10 +243,10 @@ public class Arena {
 	 * @param location
 	 * 	The location to add
 	 * @return
-	 * 	Boolean based on if the method was successful or not
+	 * 	Boolean based on if  the method was successful or not
 	 */
 	public boolean addSpawnLocation(String name, Location<World> location) {
-		if(spawnLocations.containsKey(name)) {
+		if (spawnLocations.containsKey(name)) {
 			return false;
 		}
 		spawnLocations.put(name, location);
@@ -253,10 +258,10 @@ public class Arena {
 	 * @param name
 	 * 	The name of the spawn location
 	 * @return
-	 * 	Boolean based on if the method was successful or not
+	 * 	Boolean based on if  the method was successful or not
 	 */
 	public boolean removeSpawnLocation(String name) {
-		if(!spawnLocations.containsKey(name)) {
+		if (!spawnLocations.containsKey(name)) {
 			return false;
 		}
 		spawnLocations.remove(name);
@@ -271,7 +276,7 @@ public class Arena {
 	 * 	Optional of the spawn location
 	 */
 	public Optional<Location<World>> getSpawnLocation(String name) {
-		if(!spawnLocations.containsKey(name)) {
+		if (!spawnLocations.containsKey(name)) {
 			return Optional.absent();
 		}
 		return Optional.of(spawnLocations.get(name));
@@ -283,7 +288,7 @@ public class Arena {
 	 * 	Optional of the spawn location
 	 */
 	public Optional<Location<World>> randomSpawnLocation() {
-		if(spawnLocations.isEmpty()) {
+		if (spawnLocations.isEmpty()) {
 			return Optional.absent();
 		}
 		//TODO
@@ -300,7 +305,8 @@ public class Arena {
 	//Other Arena Properties
 	
 	/**
-	 * Sets the location a player will teleport to if they failed to join the arena(Non-Dedicated Arenas Only)
+	 * Sets the location a player will teleport to if 
+	 * they failed to join the arena(Non-Dedicated Arenas Only)
 	 * @param location
 	 * 	The location to set the failed join location to
 	 */
@@ -321,7 +327,7 @@ public class Arena {
 	
 	@Listener
 	public void onPlayerDisconnect(ClientConnectionEvent.Disconnect event) {
-		if(arenaOptions.isDedicatedServer()) {
+		if (arenaOptions.isDedicatedServer()) {
 			Player player = event.getTargetEntity();
 			removeOnlinePlayer(player);
 		}
@@ -329,7 +335,7 @@ public class Arena {
 	
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event) {
-		if(arenaOptions.isDedicatedServer()) {
+		if (arenaOptions.isDedicatedServer()) {
 			Player player = event.getTargetEntity();
 			addOnlinePlayer(player);
 		}

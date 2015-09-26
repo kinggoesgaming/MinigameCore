@@ -1,6 +1,6 @@
-package me.Flibio.MinigameCore.Scoreboards;
+package me.flibio.minigamecore.scoreboards;
 
-import me.Flibio.MinigameCore.Scoreboards.ScoreboardManager.ScoreboardType;
+import me.flibio.minigamecore.scoreboards.ScoreboardManager.ScoreboardType;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scoreboard.Scoreboard;

@@ -1,4 +1,4 @@
-package me.Flibio.MinigameCore.Scoreboards;
+package me.flibio.minigamecore.scoreboards;
 
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -7,11 +7,10 @@ import org.spongepowered.api.Game;
 
 public class ScoreboardManager {
 	
-	public enum ScoreboardType {
-		LEADERBOARD
-	}
+	public enum ScoreboardType { LEADERBOARD }
 	
-	private CopyOnWriteArrayList<CustomScoreboard> scoreboards = new CopyOnWriteArrayList<CustomScoreboard>();
+	private CopyOnWriteArrayList<CustomScoreboard> scoreboards =
+			new CopyOnWriteArrayList<CustomScoreboard>();
 	
 	public ScoreboardManager(Game game) {
 		
@@ -36,8 +35,8 @@ public class ScoreboardManager {
 	 * @return
 	 */
 	public Optional<CustomScoreboard> getScoreboard(String name) {
-		for(CustomScoreboard scoreboard : scoreboards) {
-			if(scoreboard.getName().toLowerCase().equalsIgnoreCase(name)) {
+		for (CustomScoreboard scoreboard : scoreboards) {
+			if (scoreboard.getName().toLowerCase().equalsIgnoreCase(name)) {
 				Optional.of(scoreboard);
 			}
 		}
@@ -52,8 +51,8 @@ public class ScoreboardManager {
 	 * 	Boolean based on if the scoreboard exists or not
 	 */
 	public boolean scoreboardExists(String name) {
-		for(CustomScoreboard scoreboard : scoreboards) {
-			if(scoreboard.getName().toLowerCase().equalsIgnoreCase(name)) {
+		for (CustomScoreboard scoreboard : scoreboards) {
+			if (scoreboard.getName().toLowerCase().equalsIgnoreCase(name)) {
 				return true;
 			}
 		}

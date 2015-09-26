@@ -1,4 +1,4 @@
-package me.Flibio.MinigameCore.Teams;
+package me.flibio.minigamecore.teams;
 
 public class TeamManager {
 

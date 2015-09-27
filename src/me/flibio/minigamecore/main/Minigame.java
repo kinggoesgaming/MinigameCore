@@ -6,6 +6,7 @@ import me.flibio.minigamecore.file.FileManager;
 import me.flibio.minigamecore.kits.KitManager;
 import me.flibio.minigamecore.scoreboards.ScoreboardManager;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 
 public class Minigame {
@@ -20,15 +21,17 @@ public class Minigame {
 	private String name;
 
 	private Game game;
+	private Logger logger;
 	
-	public Minigame(String name, Game game) {
+	public Minigame(String name, Game game, Logger logger) {
 		this.name = name;
 		this.game = game;
+		this.logger = logger;
 		
 		//Initialize Managers
 		this.arenaManager = new ArenaManager();
 		this.economyManager = new EconomyManager(this.game);
-		this.fileManager = new FileManager();
+		this.fileManager = new FileManager(this.logger, this.name);
 		this.kitManager = new KitManager();
 		this.scoreboardManager = new ScoreboardManager(this.game);
 	}

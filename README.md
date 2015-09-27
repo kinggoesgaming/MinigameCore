@@ -1,4 +1,4 @@
-# MinigameCore
+# MinigameCore [![Build Status](https://travis-ci.org/Flibio/MinigameCore.svg?branch=master)](https://travis-ci.org/Flibio/MinigameCore)
 
 MinigameCore is a Sponge plugin that provides a core set of functions for a minigame to function. This significantly decreases the time needed to create a minigame.
 

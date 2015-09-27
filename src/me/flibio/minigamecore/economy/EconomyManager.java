@@ -1,12 +1,12 @@
 package me.flibio.minigamecore.economy;
 
-import java.util.UUID;
-
 import me.Flibio.EconomyLite.API.EconomyLiteAPI;
 
 import org.spongepowered.api.Game;
 
 import com.google.common.base.Optional;
+
+import java.util.UUID;
 
 public class EconomyManager {
 	
@@ -39,8 +39,7 @@ public class EconomyManager {
 		if (amount<0) {
 			return false;
 		}
-		return economyAPI.getPlayerAPI().setBalance(uuid.toString(),
-				Integer.valueOf((int) Math.round(amount)));
+		return economyAPI.getPlayerAPI().setBalance(uuid.toString(), Integer.valueOf((int) Math.round(amount)));
 	}
 	
 	/**
@@ -119,8 +118,7 @@ public class EconomyManager {
 	private void checkForEconomy() {
 		firstRun = false;
 		if (game.getPluginManager().getPlugin("EconomyLite").isPresent()) {
-			Optional<EconomyLiteAPI> service =
-					game.getServiceManager().provide(EconomyLiteAPI.class);
+			Optional<EconomyLiteAPI> service = game.getServiceManager().provide(EconomyLiteAPI.class);
 			if (service.isPresent()) {
 				economyInstalled = true;
 				economyAPI = service.get();

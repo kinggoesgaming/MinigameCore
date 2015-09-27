@@ -1,9 +1,5 @@
 package me.flibio.minigamecore.file;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -12,10 +8,13 @@ import org.slf4j.Logger;
 
 import com.google.common.base.Optional;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class FileManager {
 	
-	private ConcurrentHashMap<String, ConfigurationNode> files = 
-			new ConcurrentHashMap<String, ConfigurationNode>();
+	private ConcurrentHashMap<String, ConfigurationNode> files = new ConcurrentHashMap<String, ConfigurationNode>();
 	
 	private Logger logger;
 	private String name;
@@ -69,8 +68,7 @@ public class FileManager {
 					try {
 						file.createNewFile();
 						ConfigurationLoader<?> manager = HoconConfigurationLoader.builder()
-								.setFile(new File("config/"+this.name+"/"+fileName+".conf"))
-								.build();
+								.setFile(new File("config/"+this.name+"/"+fileName+".conf")).build();
 						ConfigurationNode root;
 						root = manager.load();
 						files.put(fileName, root);

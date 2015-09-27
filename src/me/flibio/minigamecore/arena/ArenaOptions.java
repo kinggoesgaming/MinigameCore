@@ -7,21 +7,16 @@ import org.spongepowered.api.text.format.TextColors;
 public class ArenaOptions {
 	
 	//Text Customization Options
-	public Text gameInProgress = Texts.builder("The game is currently in progress!")
-			.color(TextColors.RED).build();
+	public Text gameInProgress = Texts.builder("The game is currently in progress!").color(TextColors.RED).build();
 	public Text lobbyFull = Texts.builder("The lobby is full!").color(TextColors.RED).build();
-	public Text playerJoined = Texts.builder("%name%").color(TextColors.YELLOW)
-			.append(Texts.builder(" has joined the game!").color(TextColors.GRAY).build()).build();
-	public Text lobbyCountdownStarted = Texts.builder("%time%").color(TextColors.YELLOW)
-			.append(Texts.builder(" until the game begins!")
+	public Text playerJoined = Texts.builder("%name%").color(TextColors.YELLOW).append(Texts.builder(" has joined the game!")
 			.color(TextColors.GRAY).build()).build();
-	public Text lobbyCountdownCancelled = Texts.builder("Countdown cancelled!")
-			.color(TextColors.RED).build();
-	public Text lobbyCountdownProgress = Texts.builder("%time%").color(TextColors.YELLOW)
-			.append(Texts.builder(" until the game begins!")
+	public Text lobbyCountdownStarted = Texts.builder("%time%").color(TextColors.YELLOW).append(Texts.builder(" until the game begins!")
 			.color(TextColors.GRAY).build()).build();
-	public Text gameStarting = Texts.builder("The game is starting in 5 seconds!")
-			.color(TextColors.GREEN).build();
+	public Text lobbyCountdownCancelled = Texts.builder("Countdown cancelled!").color(TextColors.RED).build();
+	public Text lobbyCountdownProgress = Texts.builder("%time%").color(TextColors.YELLOW).append(Texts.builder(" until the game begins!")
+			.color(TextColors.GRAY).build()).build();
+	public Text gameStarting = Texts.builder("The game is starting in 5 seconds!").color(TextColors.GREEN).build();
 	public Text gameOver = Texts.builder("The game is over!").color(TextColors.GREEN).build();
 	
 	private boolean dedicatedServer = true;
@@ -120,18 +115,22 @@ public class ArenaOptions {
 	}
 
 	/**
-	 * Checks if the game will wait 5 seconds after the game ends before teleporting/kicking
+	 * Checks if the game will wait 5 seconds after the game ends before 
+	 * teleporting/kicking
 	 * @return
-	 * 	If the game will wait 5 seconds after the game ends before teleporting/kicking
+	 * 	If the game will wait 5 seconds after the game ends before 
+	 * teleporting/kicking
 	 */
 	public boolean isEndGameDelay() {
 		return endGameDelay;
 	}
 
 	/**
-	 * Sets if the game will wait 5 seconds after the game ends before teleporting/kicking
+	 * Sets if the game will wait 5 seconds after the game ends before 
+	 * teleporting/kicking
 	 * @param endGameDelay
-	 * 	If the game will wait 5 seconds after the game ends before teleporting/kicking
+	 * 	If the game will wait 5 seconds after the game ends before 
+	 * teleporting/kicking
 	 */
 	public void setEndGameDelay(boolean endGameDelay) {
 		this.endGameDelay = endGameDelay;
@@ -141,7 +140,8 @@ public class ArenaOptions {
 	 * Checks if the game will set players to spectator mode while
 	 * waiting 5 seconds after the game ends
 	 * @return
-	 *  If the game will set players to spectator mode while waiting 5 seconds after the game ends
+	 *  If the game will set players to spectator mode while waiting 5 seconds 
+	 *  after the game ends
 	 */
 	public boolean isEndGameSpectator() {
 		return endGameSpectator;
@@ -151,7 +151,8 @@ public class ArenaOptions {
 	 * Sets if the game will set players to spectator mode while
 	 * waiting 5 seconds after the game ends
 	 * @param endGameSpectator
-	 * 	If the game will set players to spectator mode while waiting 5 seconds after the game ends
+	 * 	If the game will set players to spectator mode while waiting 5 seconds 
+	 * after the game ends
 	 */
 	public void setEndGameSpectator(boolean endGameSpectator) {
 		this.endGameSpectator = endGameSpectator;

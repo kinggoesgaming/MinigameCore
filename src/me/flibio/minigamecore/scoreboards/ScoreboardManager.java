@@ -1,16 +1,15 @@
 package me.flibio.minigamecore.scoreboards;
 
+import org.spongepowered.api.Game;
+
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.spongepowered.api.Game;
 
 public class ScoreboardManager {
 	
 	public enum ScoreboardType { LEADERBOARD }
 	
-	private CopyOnWriteArrayList<CustomScoreboard> scoreboards =
-			new CopyOnWriteArrayList<CustomScoreboard>();
+	private CopyOnWriteArrayList<CustomScoreboard> scoreboards = new CopyOnWriteArrayList<CustomScoreboard>();
 	
 	public ScoreboardManager(Game game) {
 		

@@ -1,8 +1,8 @@
 package me.flibio.minigamecore.arena;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.google.common.base.Optional;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ArenaManager {
 	

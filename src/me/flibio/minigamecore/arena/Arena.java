@@ -1,9 +1,5 @@
 package me.flibio.minigamecore.arena;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
-
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -16,15 +12,17 @@ import org.spongepowered.api.world.World;
 
 import com.google.common.base.Optional;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
+
 public class Arena {
 	
-	public enum ArenaState { LOBBY_WAITING, LOBBY_COUNTDOWN, GAME_COUNTDOWN, GAME_PLAYING,
-		GAME_OVER }
+	public enum ArenaState { LOBBY_WAITING, LOBBY_COUNTDOWN, GAME_COUNTDOWN, GAME_PLAYING, GAME_OVER }
 	
 	private Location<World> lobbySpawnLocation;
 	private Location<World> failedJoinLocation;
-	private ConcurrentHashMap<String, Location<World>> spawnLocations =
-			new ConcurrentHashMap<String, Location<World>>();
+	private ConcurrentHashMap<String, Location<World>> spawnLocations = new ConcurrentHashMap<String, Location<World>>();
 	private CopyOnWriteArrayList<Player> onlinePlayers = new CopyOnWriteArrayList<Player>();
 	private Runnable runnable;
 	private Runnable onGameStart;
@@ -38,8 +36,7 @@ public class Arena {
 	private Object plugin;
 	
 	//TODO - Scoreboard implementation throughout arena
-	public Arena(String arenaName, Game game, Runnable runnable, Object plugin,
-			boolean dedicatedServer, Location<World> lobbySpawnLocation) {
+	public Arena(String arenaName, Game game, Runnable runnable, Object plugin, boolean dedicatedServer, Location<World> lobbySpawnLocation) {
 		this.arenaOptions = new ArenaOptions(arenaName);
 		this.game = game;
 		this.runnable = runnable;
@@ -51,8 +48,7 @@ public class Arena {
 	
 	public void addOnlinePlayer(Player player) {
 		//Check if  the game is in the correct state
-		if (arenaState.equals(ArenaState.LOBBY_WAITING)||
-				arenaState.equals(ArenaState.LOBBY_COUNTDOWN)) {
+		if (arenaState.equals(ArenaState.LOBBY_WAITING)||arenaState.equals(ArenaState.LOBBY_COUNTDOWN)) {
 			if (onlinePlayers.size()>=arenaOptions.getMaxPlayers()) {
 				//Lobby is full
 				if (arenaOptions.isDedicatedServer()) {
@@ -75,8 +71,7 @@ public class Arena {
 					onlinePlayer.sendMessage(arenaOptions.playerJoined);
 				}
 				player.setLocation(lobbySpawnLocation);
-				if (arenaState.equals(ArenaState.LOBBY_WAITING)&&
-						onlinePlayers.size()>=arenaOptions.getMinPlayers()) {
+				if (arenaState.equals(ArenaState.LOBBY_WAITING)&&onlinePlayers.size()>=arenaOptions.getMinPlayers()) {
 					startCountdown();
 				}
 			}
@@ -98,8 +93,7 @@ public class Arena {
 	
 	public void removeOnlinePlayer(Player player) {
 		//TODO disconnect message
-		if (arenaState.equals(ArenaState.LOBBY_COUNTDOWN)&&
-				onlinePlayers.size()<arenaOptions.getMinPlayers()) {
+		if (arenaState.equals(ArenaState.LOBBY_COUNTDOWN)&&onlinePlayers.size()<arenaOptions.getMinPlayers()) {
 			cancelCountdown();
 		}
 		onlinePlayers.remove(player);
@@ -111,8 +105,8 @@ public class Arena {
 	
 	
 	/**
-	 * Initializes the arena. This starts the game clock withthe runnable provided in the
-	 * Arena constructor. The runnable runs on a seperate thread every 1 tick.
+	 * Initializes the arena. This starts the game clock withthe runnable provided in the Arena constructor. 
+	 * The runnable runs on a seperate thread every 1 tick.
 	 */
 	public void initializeArena() {
 		//TODO - Make a boolean and do checks

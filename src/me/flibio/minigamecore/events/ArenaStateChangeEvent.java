@@ -5,12 +5,12 @@ import me.flibio.minigamecore.arena.Arena;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.impl.AbstractEvent;
 
-public class LobbyCountdownStartedEvent extends AbstractEvent implements Cancellable {
+public class ArenaStateChangeEvent extends AbstractEvent implements Cancellable {
 	
 	private boolean cancelled = false;
 	private Arena arena;
 	
-	public LobbyCountdownStartedEvent(Arena arena) {
+	public ArenaStateChangeEvent(Arena arena) {
 		this.arena = arena;
 	}
 	
@@ -27,5 +27,5 @@ public class LobbyCountdownStartedEvent extends AbstractEvent implements Cancell
 	public void setCancelled(boolean cancel) {
 		this.cancelled = cancel;
 	}
-
+	
 }

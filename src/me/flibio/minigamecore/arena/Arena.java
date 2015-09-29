@@ -1,5 +1,8 @@
 package me.flibio.minigamecore.arena;
 
+import me.flibio.minigamecore.events.LobbyCountdownCancelledEvent;
+import me.flibio.minigamecore.events.LobbyCountdownStartedEvent;
+
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -123,6 +126,7 @@ public class Arena {
 	public void startCountdown() {
 		currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
 		arenaState = ArenaState.LOBBY_COUNTDOWN;
+		this.game.getEventManager().post(new LobbyCountdownStartedEvent(this));
 		for (Player onlinePlayer : game.getServer().getOnlinePlayers()) {
 			//TODO - replace %time% with the seconds to go
 			onlinePlayer.sendMessage(arenaOptions.lobbyCountdownStarted);
@@ -155,6 +159,7 @@ public class Arena {
 			lobbyCountdownTask.cancel();
 		}
 		arenaState = ArenaState.LOBBY_WAITING;
+		this.game.getEventManager().post(new LobbyCountdownCancelledEvent(this));
 		for (Player onlinePlayer : game.getServer().getOnlinePlayers()) {
 			onlinePlayer.sendMessage(arenaOptions.lobbyCountdownCancelled);
 		}
@@ -316,12 +321,21 @@ public class Arena {
 	public ArenaOptions getOptions() {
 		return this.arenaOptions;
 	}
+	
+	/**
+	 * Gets the state of the arena
+	 * @return
+	 * 	The state of the arena
+	 */
+	public ArenaState getArenaState() {
+		return this.arenaState;
+	}
 
 	//Listeners
 	
 	@Listener
 	public void onPlayerDisconnect(ClientConnectionEvent.Disconnect event) {
-		if (arenaOptions.isDedicatedServer()) {
+		if (this.arenaOptions.isDedicatedServer()) {
 			Player player = event.getTargetEntity();
 			removeOnlinePlayer(player);
 		}
@@ -329,7 +343,7 @@ public class Arena {
 	
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event) {
-		if (arenaOptions.isDedicatedServer()) {
+		if (this.arenaOptions.isDedicatedServer()) {
 			Player player = event.getTargetEntity();
 			addOnlinePlayer(player);
 		}

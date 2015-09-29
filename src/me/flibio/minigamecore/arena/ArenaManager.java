@@ -13,26 +13,34 @@ public class ArenaManager {
 	}
 	
 	/**
-	 * Creates a new arena
-	 * @param name
-	 * 	The name of the arena to be created
+	 * Adds an arena to the minigame
+	 * @param arena
+	 * 	The arena to add
 	 * @return
-	 * 	Boolean based on if the arena was successfully created or not
+	 * 	If the arena was successfully added or not
 	 */
-	public boolean createArena(String name) {
-		//TODO
-		return false;
+	public boolean addArena(Arena arena) {
+		if (arenaExists(arena.getOptions().getName())) {
+			return false;
+		}
+		arenas.add(arena);
+		return true;
 	}
 	
 	/**
-	 * Deletes an arena
+	 * Removes an arena
 	 * @param name
-	 * 	The name of the arena to delete
+	 * 	The name of the arena to remove
 	 * @return
-	 * 	Boolean based on if the arena was successfully deleted or not
+	 * 	If the arena was successfully removed or not
 	 */
-	public boolean deleteArena(String name) {
-		//TODO
+	public boolean removeArena(String name) {
+		for (Arena arena : arenas) {
+			if (arena.getOptions().getName().equalsIgnoreCase(name)) {
+				arenas.remove(arena);
+				return true;
+			}
+		}
 		return false;
 	}
 	

@@ -1,3 +1,11 @@
 language: java
 jdk:
-  - oraclejdk8
+- oraclejdk8
+deploy:
+  provider: releases
+  file: MinigameCore.jar
+  skip_cleanup: true
+  on:
+    tags: true
+  api-key:
+    secure: ciDQPXtp/hZLOhW28S/BFsLSRDOGICBaEk4UyqJDI6OL7Afgl16/V8KkdKMvZz0y8l7ng+vuT4SvTxniGWmV55SLAfC7hrVloEwvytvxiT++1d/opm2GXn93C0t6b3KoRXIgxMLgkQ8TEEU7NdPVsmVmOTGqUU0QFmWsPzOHVIf8ckRsQ1/2dtQ4VWrtBwGlEPXSbPdYGlgVOx9s936+8aOgXLYmZiAQ6R37grgFVfKZ0vvvIe7zk0CDJ+LoYJx+XjBopuRgDbIvI9bj5nen/xqKB569IOX88a2Yne4IWkOwEX2PXGrJFFcG9KBW/167WiMdFjars1DdAhiTI7BXnZRXdf2/n0dmPsBQhxDPWWOfW45zvwIHCtQtE9ZzSS4GOZGSciTMWa4Wzg/8g03aJb+jNhaSQAdFOmTKO1DZrziM7MBXkW3O/Xa+FWTZSoI4FQ+93wQKD8Xbbuv7AhkExOR7fTQlEzGF/sz/MXyjwVbb923psEyOE3FV5BDDpJyIQEYS9Qt9hykU4AsOMpAlRGDKXSA7UezapHCxz1+RfpkErAqc5MnFhqi+kvkIThdjJ5L5CtH+X44jyhg6q7+HU7Wqgw+TAxWXj9WTZEdjsr8mGlbRP9rD0fbdVR3jx6ASoVRQKH/lVjJOoZdI6kt7g6JbpbwreB602jwViVIFkC4=

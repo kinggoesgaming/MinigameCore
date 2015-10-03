@@ -3,7 +3,7 @@ jdk:
 - oraclejdk8
 deploy:
   provider: releases
-  file: MinigameCore.jar
+  file: build/libs/minigamecore.jar
   skip_cleanup: true
   on:
     tags: true

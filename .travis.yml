@@ -1,13 +1,7 @@
 language: java
 jdk:
 - oraclejdk8
-before_deploy:
-- export RELEASE_PKG_FILE=$(ls *.jar)
-- echo "deploying $RELEASE_PKG_FILE to GitHub releases"
-deploy:
   provider: releases
-  file_glob: true
-  file: "${RELEASE_PKG_FILE}"
   skip_cleanup: true
   on:
     tags: true

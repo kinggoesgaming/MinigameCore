@@ -26,6 +26,7 @@ public class ArenaOptions {
 	private boolean endGameSpectator = true;
 	private boolean triggerPlayerEvents = true;
 	private boolean defaultStateChangeActions = true;
+	private boolean defaultPlayerEventActions = true;
 	
 	public ArenaOptions(String arenaName) {
 		this.name = arenaName;
@@ -181,8 +182,8 @@ public class ArenaOptions {
 	}
 
 	/**
-	 * Gets if MinigameCore will run default state change actions
-	 * @return the defaultStateChangeActions	
+	 * Checks if MinigameCore will run default state change actions
+	 * @return
 	 * 	If MinigameCore will run default state change actions
 	 */
 	public boolean isDefaultStateChangeActions() {
@@ -196,6 +197,24 @@ public class ArenaOptions {
 	 */
 	public void setDefaultStateChangeActions(boolean defaultStateChangeActions) {
 		this.defaultStateChangeActions = defaultStateChangeActions;
+	}
+
+	/**
+	 * Checks if MinigameCore will run default player event actions
+	 * @return
+	 * 	If MinigameCore will run default player event actions
+	 */
+	public boolean isDefaultPlayerEventActions() {
+		return defaultPlayerEventActions;
+	}
+
+	/**
+	 * Sets if MinigameCore will run default player event actions
+	 * @param defaultPlayerEventActions
+	 * 	If MinigameCore will run default player event actions
+	 */
+	public void setDefaultPlayerEventActions(boolean defaultPlayerEventActions) {
+		this.defaultPlayerEventActions = defaultPlayerEventActions;
 	}
 	
 }

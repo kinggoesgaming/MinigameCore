@@ -59,8 +59,8 @@ public class KitManager {
 	 * 	Boolean based on if the kit was found or not
 	 */
 	public boolean kitExists(String name) {
-		for (Kit kit : kits) {
-			if (kit.getName().equalsIgnoreCase(name)) {
+		for(Kit kit : kits) {
+			if(kit.getName().equalsIgnoreCase(name)) {
 				return true;
 			}
 		}

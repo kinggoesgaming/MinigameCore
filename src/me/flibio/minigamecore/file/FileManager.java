@@ -34,8 +34,8 @@ public class FileManager {
 	public boolean generateFolder(String name) {
 		File folder = new File(name);
 		try {
-			if (!folder.exists()) {
-				if (folder.mkdir()) {
+			if(!folder.exists()) {
+				if(folder.mkdir()) {
 					logger.info("Successfully generated folder "+name);
 					return true;
 				} else {
@@ -59,11 +59,11 @@ public class FileManager {
 	 * 	If the method was successful or not
 	 */
 	public boolean initializeFile(String fileName) {
-		if (generateFolder(this.name)) {
-			if (!files.containsKey(fileName)) {
+		if(generateFolder(this.name)) {
+			if(!files.containsKey(fileName)) {
 				//File isn't registered
 				File file = new File("config/"+this.name+"/"+fileName+".conf");
-				if (!file.exists()) {
+				if(!file.exists()) {
 					//File doesn't exist
 					try {
 						file.createNewFile();
@@ -108,7 +108,7 @@ public class FileManager {
 	 * 	The ConfigurationNode of the file
 	 */
 	public Optional<ConfigurationNode> getFile(String name) {
-		if (files.containsKey(name)) {
+		if(files.containsKey(name)) {
 			return Optional.of(files.get(name));
 		} else {
 			return Optional.absent();

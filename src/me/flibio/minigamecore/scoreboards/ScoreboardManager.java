@@ -34,8 +34,8 @@ public class ScoreboardManager {
 	 * @return
 	 */
 	public Optional<CustomScoreboard> getScoreboard(String name) {
-		for (CustomScoreboard scoreboard : scoreboards) {
-			if (scoreboard.getName().toLowerCase().equalsIgnoreCase(name)) {
+		for(CustomScoreboard scoreboard : scoreboards) {
+			if(scoreboard.getName().toLowerCase().equalsIgnoreCase(name)) {
 				Optional.of(scoreboard);
 			}
 		}
@@ -50,8 +50,8 @@ public class ScoreboardManager {
 	 * 	Boolean based on if the scoreboard exists or not
 	 */
 	public boolean scoreboardExists(String name) {
-		for (CustomScoreboard scoreboard : scoreboards) {
-			if (scoreboard.getName().toLowerCase().equalsIgnoreCase(name)) {
+		for(CustomScoreboard scoreboard : scoreboards) {
+			if(scoreboard.getName().toLowerCase().equalsIgnoreCase(name)) {
 				return true;
 			}
 		}

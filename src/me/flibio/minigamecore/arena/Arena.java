@@ -44,7 +44,6 @@ public class Arena {
 	private Location<World> failedJoinLocation;
 	private ConcurrentHashMap<String, Location<World>> spawnLocations = new ConcurrentHashMap<String, Location<World>>();
 	private CopyOnWriteArrayList<Player> onlinePlayers = new CopyOnWriteArrayList<Player>();
-	private Runnable onGameStart;
 	private int currentLobbyCountdown;
 	private Task lobbyCountdownTask;
 	private ArenaState arenaState;
@@ -55,16 +54,28 @@ public class Arena {
 	private Object plugin;
 	
 	//TODO - Scoreboard implementation throughout arena
-	public Arena(String arenaName, Game game, Object plugin, boolean dedicatedServer, Location<World> lobbySpawnLocation) {
+	/**
+	 * An arena is an object that can handle spawn locations, lobbies, games, and more.
+	 * @param arenaName
+	 * 	The name of the arena
+	 * @param game
+	 * 	An instance of the game
+	 * @param plugin
+	 * 	An instance of the main class of your plugin
+	 */
+	public Arena(String arenaName, Game game, Object plugin) {
 		this.arenaOptions = new ArenaOptions(arenaName);
 		this.game = game;
-		this.lobbySpawnLocation = lobbySpawnLocation;
-		this.arenaOptions.setDedicatedServer(dedicatedServer);
 		this.arenaState = DefaultArenaState.LOBBY_WAITING.getState();
 		
 		game.getEventManager().registerListeners(plugin, this);
 	}
 	
+	/**
+	 * Adds an online player
+	 * @param player
+	 * 	The player to add
+	 */
 	public void addOnlinePlayer(Player player) {
 		//Check if the game is in the correct state
 		if(arenaState.equals(DefaultArenaState.LOBBY_WAITING.getState())||arenaState.equals(DefaultArenaState.LOBBY_COUNTDOWN.getState())) {
@@ -89,7 +100,9 @@ public class Arena {
 					//TODO - replace %name% with the player name
 					onlinePlayer.sendMessage(arenaOptions.playerJoined);
 				}
-				player.setLocation(lobbySpawnLocation);
+				if(lobbySpawnLocation!=null) {
+					player.setLocation(lobbySpawnLocation);
+				}
 				if(arenaState.equals(DefaultArenaState.LOBBY_WAITING.getState())&&onlinePlayers.size()>=arenaOptions.getMinPlayers()) {
 					arenaStateChange(DefaultArenaState.LOBBY_COUNTDOWN.getState());
 				}
@@ -110,6 +123,11 @@ public class Arena {
 		}
 	}
 	
+	/**
+	 * Removes an online player
+	 * @param player
+	 * 	The player to remove
+	 */
 	public void removeOnlinePlayer(Player player) {
 		onlinePlayers.remove(player);
 		if(arenaState.equals(DefaultArenaState.LOBBY_COUNTDOWN.getState())&&onlinePlayers.size()<arenaOptions.getMinPlayers()) {
@@ -121,10 +139,20 @@ public class Arena {
 		}
 	}
 	
+	/**
+	 * Gets all of the players in an arena
+	 * @return
+	 * 	All the players in the arena
+	 */
 	public CopyOnWriteArrayList<Player> getOnlinePlayers() {
 		return onlinePlayers;
 	}
-
+	
+	/**
+	 * Calls an state change on the arena
+	 * @param changeTo
+	 * 	The state to change the arena to
+	 */
 	public void arenaStateChange(ArenaState changeTo) {
 		if(!arenaStates.contains(changeTo)) {
 			return;
@@ -181,9 +209,6 @@ public class Arena {
 				}
 				//TODO - Delay before game starts
 				arenaState = ArenaStateBuilder.createBasicArenaState("GAME_PLAYING");
-				if(onGameStart!=null) {
-					onGameStart.run();
-				}
 			} else if(arenaState.getStateName().equalsIgnoreCase("GAME_OVER")) {
 				for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
 					onlinePlayer.sendMessage(arenaOptions.gameOver);
@@ -206,7 +231,9 @@ public class Arena {
 								if(arenaOptions.isDedicatedServer()) {
 									onlinePlayer.kick(arenaOptions.gameOver);
 								} else {
-									onlinePlayer.setLocation(lobbySpawnLocation);
+									if(lobbySpawnLocation!=null) {
+										onlinePlayer.setLocation(lobbySpawnLocation);
+									}
 								}
 							}
 						}
@@ -222,7 +249,9 @@ public class Arena {
 						if(arenaOptions.isDedicatedServer()) {
 							onlinePlayer.kick(arenaOptions.gameOver);
 						} else {
-							onlinePlayer.setLocation(lobbySpawnLocation);
+							if(lobbySpawnLocation!=null) {
+								onlinePlayer.setLocation(lobbySpawnLocation);
+							}
 						}
 					}
 				}
@@ -452,6 +481,15 @@ public class Arena {
 		} else {
 			return Optional.absent();
 		}
+	}
+	
+	/**
+	 * Sets the lobby spawn location of the arena
+	 * @param location
+	 * 	The lobby spawn location of the arena
+	 */
+	public void setLobbySpawnLocation(Location<World> location) {
+		lobbySpawnLocation = location;
 	}
 
 	//Listeners

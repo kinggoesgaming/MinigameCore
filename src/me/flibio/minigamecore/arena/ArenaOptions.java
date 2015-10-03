@@ -7,17 +7,15 @@ import org.spongepowered.api.text.format.TextColors;
 public class ArenaOptions {
 	
 	//Text Customization Options
-	public Text gameInProgress = Texts.builder("The game is currently in progress!").color(TextColors.RED).build();
-	public Text lobbyFull = Texts.builder("The lobby is full!").color(TextColors.RED).build();
-	public Text playerJoined = Texts.builder("%name%").color(TextColors.YELLOW).append(Texts.builder(" has joined the game!")
-			.color(TextColors.GRAY).build()).build();
-	public Text lobbyCountdownStarted = Texts.builder("%time%").color(TextColors.YELLOW).append(Texts.builder(" until the game begins!")
-			.color(TextColors.GRAY).build()).build();
+	public Text gameInProgress = Texts.of(TextColors.RED,"The game is currently in progress!");
+	public Text lobbyFull = Texts.of(TextColors.RED,"The lobby is full!");
+	public Text playerJoined = Texts.of(TextColors.YELLOW,"%name%",TextColors.GRAY," has joined the game!");
+	public Text playerQuit = Texts.of(TextColors.YELLOW,"%name%",TextColors.GRAY," has left the game!");
+	public Text lobbyCountdownStarted = Texts.of(TextColors.YELLOW,"%time%",TextColors.GRAY," until the game begins!");
 	public Text lobbyCountdownCancelled = Texts.builder("Countdown cancelled!").color(TextColors.RED).build();
-	public Text lobbyCountdownProgress = Texts.builder("%time%").color(TextColors.YELLOW).append(Texts.builder(" until the game begins!")
-			.color(TextColors.GRAY).build()).build();
-	public Text gameStarting = Texts.builder("The game is starting in 5 seconds!").color(TextColors.GREEN).build();
-	public Text gameOver = Texts.builder("The game is over!").color(TextColors.GREEN).build();
+	public Text lobbyCountdownProgress = Texts.of(TextColors.YELLOW,"%time%",TextColors.GRAY," until the game begins!");
+	public Text gameStarting = Texts.of(TextColors.GREEN,"The game is starting in ",TextColors.YELLOW,"%time%",TextColors.GREEN," seconds!");
+	public Text gameOver = Texts.of(TextColors.GREEN,"The game is over!");
 	
 	private boolean dedicatedServer = true;
 	private int minPlayers = 0;
@@ -26,6 +24,8 @@ public class ArenaOptions {
 	private String name = "";
 	private boolean endGameDelay = true;
 	private boolean endGameSpectator = true;
+	private boolean triggerPlayerEvents = true;
+	private boolean defaultStateChangeActions = true;
 	
 	public ArenaOptions(String arenaName) {
 		this.name = arenaName;
@@ -156,6 +156,46 @@ public class ArenaOptions {
 	 */
 	public void setEndGameSpectator(boolean endGameSpectator) {
 		this.endGameSpectator = endGameSpectator;
+	}
+
+	/**
+	 * Checks if MinigameCore will automatically trigger player join 
+	 * and player quit methods
+	 * @return
+	 * 	If MinigameCore will automatically trigger player join 
+	 * 	and player quit methods
+	 */
+	public boolean isTriggerPlayerEvents() {
+		return triggerPlayerEvents;
+	}
+
+	/**
+	 * Sets if MinigameCore will automatically trigger player join 
+	 * and player quit methods
+	 * @param triggerPlayerEvents
+	 * 	If MinigameCore will automatically trigger player join 
+	 * 	and player quit methods
+	 */
+	public void setTriggerPlayerEvents(boolean triggerPlayerEvents) {
+		this.triggerPlayerEvents = triggerPlayerEvents;
+	}
+
+	/**
+	 * Gets if MinigameCore will run default state change actions
+	 * @return the defaultStateChangeActions	
+	 * 	If MinigameCore will run default state change actions
+	 */
+	public boolean isDefaultStateChangeActions() {
+		return defaultStateChangeActions;
+	}
+
+	/**
+	 * Sets if MinigameCore will run default state change actions
+	 * @param defaultStateChangeActions
+	 * 	If MinigameCore will run default state change actions
+	 */
+	public void setDefaultStateChangeActions(boolean defaultStateChangeActions) {
+		this.defaultStateChangeActions = defaultStateChangeActions;
 	}
 	
 }

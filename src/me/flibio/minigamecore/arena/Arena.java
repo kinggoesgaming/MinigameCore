@@ -12,10 +12,9 @@ import org.spongepowered.api.service.scheduler.Task;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import com.google.common.base.Optional;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -313,7 +312,7 @@ public class Arena {
 	 */
 	public Optional<Location<World>> getSpawnLocation(String name) {
 		if(!spawnLocations.containsKey(name)) {
-			return Optional.absent();
+			return Optional.empty();
 		}
 		return Optional.of(spawnLocations.get(name));
 	}
@@ -325,10 +324,10 @@ public class Arena {
 	 */
 	public Optional<Location<World>> randomSpawnLocation() {
 		if(spawnLocations.isEmpty()) {
-			return Optional.absent();
+			return Optional.empty();
 		}
 		//TODO
-		return Optional.absent();
+		return Optional.empty();
 	}
 	
 	/**
@@ -481,7 +480,7 @@ public class Arena {
 		if(arenaStateRunnableExists(state)) {
 			return Optional.of(runnables.get(state));
 		} else {
-			return Optional.absent();
+			return Optional.empty();
 		}
 	}
 	

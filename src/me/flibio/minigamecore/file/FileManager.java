@@ -6,10 +6,9 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import org.slf4j.Logger;
 
-import com.google.common.base.Optional;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class FileManager {
@@ -111,7 +110,7 @@ public class FileManager {
 		if(files.containsKey(name)) {
 			return Optional.of(files.get(name));
 		} else {
-			return Optional.absent();
+			return Optional.empty();
 		}
 	}
 }

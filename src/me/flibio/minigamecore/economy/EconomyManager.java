@@ -4,8 +4,7 @@ import me.Flibio.EconomyLite.API.EconomyLiteAPI;
 
 import org.spongepowered.api.Game;
 
-import com.google.common.base.Optional;
-
+import java.util.Optional;
 import java.util.UUID;
 
 public class EconomyManager {
@@ -54,11 +53,11 @@ public class EconomyManager {
 			checkForEconomy();
 		}
 		if(!economyInstalled) {
-			Optional.absent();
+			Optional.empty();
 		}
 		int bal = economyAPI.getPlayerAPI().getBalance(uuid.toString());
 		if(bal<0) {
-			return Optional.absent();
+			return Optional.empty();
 		}
 		return Optional.of((double) bal);
 	}

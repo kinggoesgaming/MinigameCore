@@ -5,6 +5,7 @@ import me.flibio.minigamecore.economy.EconomyManager;
 import me.flibio.minigamecore.file.FileManager;
 import me.flibio.minigamecore.kits.KitManager;
 import me.flibio.minigamecore.scoreboards.ScoreboardManager;
+import me.flibio.minigamecore.teams.TeamManager;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -17,6 +18,7 @@ public class Minigame {
 	private FileManager fileManager;
 	private KitManager kitManager;
 	private ScoreboardManager scoreboardManager;
+	private TeamManager teamManager;
 
 	private String name;
 
@@ -34,6 +36,7 @@ public class Minigame {
 		this.fileManager = new FileManager(this.logger, this.name);
 		this.kitManager = new KitManager();
 		this.scoreboardManager = new ScoreboardManager(this.game);
+		this.teamManager = new TeamManager();
 	}
 	
 	/**
@@ -64,5 +67,9 @@ public class Minigame {
 	
 	public ScoreboardManager getScoreboardManager() {
 		return scoreboardManager;
+	}
+	
+	public TeamManager getTeamManager() {
+		return teamManager;
 	}
 }

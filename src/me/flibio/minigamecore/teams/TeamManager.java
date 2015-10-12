@@ -1,5 +1,7 @@
 package me.flibio.minigamecore.teams;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -74,5 +76,65 @@ public class TeamManager {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Adds a new basic team
+	 * @param name
+	 * 	The name of the team to add
+	 * @return
+	 * 	If the method was successful or not
+	 */
+	public boolean addBasicTeam(String name) {
+		if(teamExists(name)) {
+			return false;
+		} else {
+			teams.add(new Team(name));
+			return true;
+		}
+	}
+	
+	/**
+	 * Checks if a player is on a team
+	 * @param playerName
+	 * 	The name of the player
+	 * @return
+	 * 	If the player is on a team
+	 */
+	public boolean isPlayerOnTeam(String playerName) {
+		for(Team team : teams) {
+			if(team.playerExists(playerName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets all of the teams a player has joined
+	 * @param playerName
+	 * 	The name of the player to get the teams of
+	 * @return
+	 * 	A list of the teams the player has joined
+	 */
+	public List<Team> getJoinedTeams(String playerName) {
+		ArrayList<Team> joinedTeams = new ArrayList<Team>();
+		for(Team team : teams) {
+			if(team.playerExists(playerName)) {
+				joinedTeams.add(team);
+			}
+		}
+		return joinedTeams;
+	}
+	
+	/**
+	 * Removes a player from all teams they are on
+	 * @param playerName
+	 * 	The name of the player to remove from all teams
+	 */
+	public void removeFromAllTeams(String playerName) {
+		for(Team team : teams) {
+			team.removePlayer(playerName);
+		}
 	}
 }

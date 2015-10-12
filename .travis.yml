@@ -1,3 +1,14 @@
 language: java
 jdk:
 - oraclejdk8
+branches:
+  only:
+  - master
+after_success:
+- 'if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then exit; fi'
+- 'mv ${HOME}/build/${TRAVIS_REPO_SLUG}/target/MinigameCore-{1.0.0,${TRAVIS_BUILD_NUMBER}}.jar'
+- 'wc -c ${HOME}/build/${TRAVIS_REPO_SLUG}/target/MinigameCore-${TRAVIS_BUILD_NUMBER}.jar'
+- 'curl -v -X POST -d "{\"tag\": \"${TRAVIS_BUILD_NUMBER}\",\"message\": \"MinigameCore Build ${TRAVIS_BUILD_NUMBER}\",\"object\": \"${TRAVIS_COMMIT}\",\"type\": \"commit\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/Flibio/MinigameCore/git/tags"'
+- 'curl -v -X POST -d "{\"ref\": \"refs/tags/${TRAVIS_BUILD_NUMBER}\",\"sha\": \"${TRAVIS_COMMIT}\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/Flibio/MinigameCore/git/refs"'
+- 'curl -v -X POST -d "{\"tag_name\": \"${TRAVIS_BUILD_NUMBER}\",\"target_commitish\": \"master\",\"name\": \"MinigameCore Build ${TRAVIS_BUILD_NUMBER}\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/Flibio/MinigameCore/releases"'
+- 'curl -v -X POST --data-binary @${HOME}/build/${TRAVIS_REPO_SLUG}/target/MinigameCore-${TRAVIS_BUILD_NUMBER}.jar --header "Content-Type:application/octet-stream" -u Flibio:${GITHUB_OAUTH} "https://uploads.github.com/repos/Flibio/MinigameCore/releases/$(phantomjs getid.js)/assets?name=MinigameCore-${TRAVIS_BUILD_NUMBER}.jar"'

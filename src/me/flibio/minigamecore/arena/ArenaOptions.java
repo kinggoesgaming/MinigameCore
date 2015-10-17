@@ -18,8 +18,8 @@ public class ArenaOptions {
 	public Text gameOver = Texts.of(TextColors.GREEN,"The game is over!");
 	
 	private boolean dedicatedServer = true;
-	private int minPlayers = 0;
-	private int maxPlayers = 0;
+	private int minPlayers = 2;
+	private int maxPlayers = 8;
 	private int lobbyCountdownTime = 30;
 	private String name = "";
 	private boolean endGameDelay = true;

@@ -65,6 +65,7 @@ public class Arena {
 	public Arena(String arenaName, Game game, Object plugin) {
 		this.arenaOptions = new ArenaOptions(arenaName);
 		this.game = game;
+		this.plugin = plugin;
 		this.arenaState = DefaultArenaState.LOBBY_WAITING.getState();
 		
 		game.getEventManager().registerListeners(plugin, this);

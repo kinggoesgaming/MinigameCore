@@ -4,6 +4,7 @@ import me.flibio.minigamecore.scoreboards.ScoreboardManager.ScoreboardType;
 
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.Objective;
@@ -23,8 +24,8 @@ public class InfoScoreboard extends MinigameCoreScoreboard {
 		super(ScoreboardType.INFO, name);
 		displayName = Texts.of(name);
 		
-		scoreboard = game.getRegistry().createScoreboardBuilder().build();
-		obj = game.getRegistry().createObjectiveBuilder().name(name).criterion(Criteria.DUMMY).displayName(displayName).build();
+		scoreboard = game.getRegistry().createBuilder(Scoreboard.Builder.class).build();
+		obj = game.getRegistry().createBuilder(Objective.Builder.class).name(name).criterion(Criteria.DUMMY).displayName(displayName).build();
 	}
 	
 	/**

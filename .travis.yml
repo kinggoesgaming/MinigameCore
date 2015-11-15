@@ -4,11 +4,19 @@ jdk:
 branches:
   only:
   - master
+install:   
+- mkdir travis-phantomjs   
+- wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -O $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2   
+- tar -xvf $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C $PWD/travis-phantomjs   
+- export PATH=$PWD/travis-phantomjs:$PATH
+- mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 after_success:
 - 'if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then exit; fi'
-- 'mv ${HOME}/build/${TRAVIS_REPO_SLUG}/target/MinigameCore-{1.0.0,${TRAVIS_BUILD_NUMBER}}.jar'
-- 'wc -c ${HOME}/build/${TRAVIS_REPO_SLUG}/target/MinigameCore-${TRAVIS_BUILD_NUMBER}.jar'
-- 'curl -v -X POST -d "{\"tag\": \"${TRAVIS_BUILD_NUMBER}\",\"message\": \"MinigameCore Build ${TRAVIS_BUILD_NUMBER}\",\"object\": \"${TRAVIS_COMMIT}\",\"type\": \"commit\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/Flibio/MinigameCore/git/tags"'
-- 'curl -v -X POST -d "{\"ref\": \"refs/tags/${TRAVIS_BUILD_NUMBER}\",\"sha\": \"${TRAVIS_COMMIT}\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/Flibio/MinigameCore/git/refs"'
-- 'curl -v -X POST -d "{\"tag_name\": \"${TRAVIS_BUILD_NUMBER}\",\"target_commitish\": \"master\",\"name\": \"MinigameCore Build ${TRAVIS_BUILD_NUMBER}\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/Flibio/MinigameCore/releases"'
-- 'curl -v -X POST --data-binary @${HOME}/build/${TRAVIS_REPO_SLUG}/target/MinigameCore-${TRAVIS_BUILD_NUMBER}.jar --header "Content-Type:application/octet-stream" -u Flibio:${GITHUB_OAUTH} "https://uploads.github.com/repos/Flibio/MinigameCore/releases/$(phantomjs getid.js)/assets?name=MinigameCore-${TRAVIS_BUILD_NUMBER}.jar"'
+- 'CURRENT_TAG=$(phantomjs gettag.js)'
+- 'BUILD_NUMBER=$((CURRENT_TAG+1))'
+- 'mv ${HOME}/build/${TRAVIS_REPO_SLUG}/target/MinigameCore-{1.0.0,${BUILD_NUMBER}}.jar'
+- 'wc -c ${HOME}/build/${TRAVIS_REPO_SLUG}/target/MinigameCore-${BUILD_NUMBER}.jar'
+- 'curl -v -X POST -d "{\"tag\": \"${BUILD_NUMBER}\",\"message\": \"MinigameCore Build ${BUILD_NUMBER}\",\"object\": \"${TRAVIS_COMMIT}\",\"type\": \"commit\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/MinigameCore/MinigameCore/git/tags"'
+- 'curl -v -X POST -d "{\"ref\": \"refs/tags/${BUILD_NUMBER}\",\"sha\": \"${TRAVIS_COMMIT}\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/MinigameCore/MinigameCore/git/refs"'
+- 'curl -v -X POST -d "{\"tag_name\": \"${BUILD_NUMBER}\",\"target_commitish\": \"master\",\"name\": \"MinigameCore Build ${BUILD_NUMBER}\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/MinigameCore/MinigameCore/releases"'
+- 'curl -v -X POST --data-binary @${HOME}/build/${TRAVIS_REPO_SLUG}/target/MinigameCore-${BUILD_NUMBER}.jar --header "Content-Type:application/octet-stream" -u Flibio:${GITHUB_OAUTH} "https://uploads.github.com/repos/MinigameCore/MinigameCore/releases/$(phantomjs getid.js)/assets?name=MinigameCore-${BUILD_NUMBER}.jar"'

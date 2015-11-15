@@ -10,9 +10,9 @@ if (window.XMLHttpRequest)
     {
         if (xmlhttp.readyState==4 && xmlhttp.status==200)
         {
-            console.log(JSON.parse(xmlhttp.responseText).id);
+            console.log(JSON.parse(xmlhttp.responseText)[0].name);
 			phantom.exit();
         }
     }
-    xmlhttp.open("GET", "https://api.github.com/repos/minigamecore/minigamecore/releases/latest", true );
+    xmlhttp.open("GET", "https://api.github.com/repos/minigamecore/minigamecore/tags", true );
     xmlhttp.send(); 

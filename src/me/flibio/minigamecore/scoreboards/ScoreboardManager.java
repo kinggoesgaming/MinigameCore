@@ -20,6 +20,7 @@ public class ScoreboardManager {
 	 * @param name
 	 * 	Name of the scoreboard to get
 	 * @return
+	 * 	The scoreboard
 	 */
 	public Optional<MinigameCoreScoreboard> getScoreboard(String name) {
 		for(MinigameCoreScoreboard scoreboard : scoreboards) {

@@ -25,6 +25,8 @@ public class EconomyManager {
 	 * Sets the balance of a player
 	 * @param uuid
 	 * 	UUID of the player whose balance to change
+	 * @param amount
+	 * 	The amount to set the player's balance to
 	 * @return
 	 * 	Boolean based on if  the method was successful or not
 	 */

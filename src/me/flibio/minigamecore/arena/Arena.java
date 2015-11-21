@@ -356,7 +356,7 @@ public class Arena {
 	
 	/**
 	 * Adds a new arena state
-	 * @param arenaState
+	 * @param state
 	 * 	The arena state to add
 	 * @return
 	 * 	If the method was successful or not

@@ -16,6 +16,7 @@ public class ArenaState {
 	/**
 	 * Gets the name of the state
 	 * @return
+	 * 	The state name
 	 */
 	public String getStateName() {
 		return this.stateName;

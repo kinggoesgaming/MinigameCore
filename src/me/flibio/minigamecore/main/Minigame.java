@@ -25,6 +25,15 @@ public class Minigame {
 	private Game game;
 	private Logger logger;
 	
+	/**
+	 * Stores information about the game
+	 * @param name
+	 * 	The name of the game
+	 * @param game
+	 * 	Instance of the game object
+	 * @param logger
+	 * 	Instance of the logger object
+	 */
 	public Minigame(String name, Game game, Logger logger) {
 		this.name = name;
 		this.game = game;
@@ -49,26 +58,56 @@ public class Minigame {
 	}
 	
 	//All manager getters
+	/**
+	 * Gets the arena manager for the game
+	 * @return
+	 * 	The arena manager
+	 */
 	public ArenaManager getArenaManager() {
 		return arenaManager;
 	}
 	
+	/**
+	 * Gets the economy manager for the game
+	 * @return
+	 * 	The economy manager
+	 */
 	public EconomyManager getEconomyManager() {
 		return economyManager;
 	}
 	
+	/**
+	 * Gets the file manager for the game
+	 * @return
+	 * 	The file manager
+	 */
 	public FileManager getFileManager() {
 		return fileManager;
 	}
 	
+	/**
+	 * Gets the kit manager for the game
+	 * @return
+	 * 	The kit manager
+	 */
 	public KitManager getKitManager() {
 		return kitManager;
 	}
 	
+	/**
+	 * Gets the scoreboard manager for the game
+	 * @return
+	 * 	The scoreboard manager
+	 */
 	public ScoreboardManager getScoreboardManager() {
 		return scoreboardManager;
 	}
 	
+	/**
+	 * Gets the team manager for the game
+	 * @return
+	 * 	The team manager
+	 */
 	public TeamManager getTeamManager() {
 		return teamManager;
 	}

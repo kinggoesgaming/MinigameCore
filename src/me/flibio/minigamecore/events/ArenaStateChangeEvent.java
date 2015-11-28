@@ -10,10 +10,20 @@ public class ArenaStateChangeEvent extends AbstractEvent implements Cancellable 
 	private boolean cancelled = false;
 	private Arena arena;
 	
+	/**
+	 * Called when an arena changes its state
+	 * @param arena
+	 * 	The arena whose state changed
+	 */
 	public ArenaStateChangeEvent(Arena arena) {
 		this.arena = arena;
 	}
 	
+	/**
+	 * Gets whichever arena's state changed
+	 * @return
+	 * 	The arena whose state changed
+	 */
 	public Arena getArena() {
 		return this.arena;
 	}

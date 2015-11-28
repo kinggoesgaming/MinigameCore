@@ -28,6 +28,11 @@ public class ArenaOptions {
 	private boolean defaultStateChangeActions = true;
 	private boolean defaultPlayerEventActions = true;
 	
+	/**
+	 * Stores configurable options for the arena
+	 * @param arenaName
+	 * 	The name of the arena
+	 */
 	public ArenaOptions(String arenaName) {
 		this.name = arenaName;
 	}

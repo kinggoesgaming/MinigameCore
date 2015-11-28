@@ -7,6 +7,9 @@ public class KitManager {
 	
 	private CopyOnWriteArrayList<Kit> kits = new CopyOnWriteArrayList<Kit>();
 	
+	/**
+	 * Manages all of the kits in a game
+	 */
 	public KitManager() {
 		
 	}

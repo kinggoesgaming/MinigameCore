@@ -18,6 +18,13 @@ public class FileManager {
 	private Logger logger;
 	private String name;
 	
+	/**
+	 * Provides easy-to-use file configuration and data storage
+	 * @param logger
+	 * 	An instance of the logger
+	 * @param name
+	 * 	The name of the game
+	 */
 	public FileManager(Logger logger, String name) {
 		this.logger = logger;
 		this.name = name;
@@ -51,7 +58,7 @@ public class FileManager {
 	}
 	
 	/**
-	 * Initializes a file into the file manager
+	 * Initializes a file into the file manager. This must be done each server start.
 	 * @param fileName
 	 * 	The name of the file to initialize
 	 * @return
@@ -95,6 +102,32 @@ public class FileManager {
 				return false;
 			}
 		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Saves a file. Writes to disk and updates the list of files.
+	 * @param fileName
+	 * 	The name of the file to save
+	 * @param fileData
+	 * 	The file data to be saved
+	 * @return
+	 * 	If the method was successful or not
+	 */
+	public boolean saveFile(String fileName, ConfigurationNode fileData) {
+		File file = new File("config/"+this.name+"/"+fileName+".conf");
+		if(file.exists()) {
+			ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
+			try {
+				manager.save(fileData);
+				return true;
+			} catch (IOException e) {
+				logger.error("Error saving "+fileName+": "+e.getMessage());
+				return false;
+			}
+		} else {
+			//File doesn't exist
 			return false;
 		}
 	}

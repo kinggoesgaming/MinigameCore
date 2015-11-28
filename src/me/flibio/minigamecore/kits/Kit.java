@@ -3,7 +3,7 @@ package me.flibio.minigamecore.kits;
 public class Kit {
 	
 	private String name;
-	
+
 	public Kit(String name) {
 		this.name = name;
 	}

@@ -7,6 +7,9 @@ public class ArenaManager {
 	
 	private CopyOnWriteArrayList<Arena> arenas = new CopyOnWriteArrayList<Arena>();
 	
+	/**
+	 * Manages the arenas for a game
+	 */
 	public ArenaManager() {
 		
 	}

@@ -17,6 +17,11 @@ public class EconomyManager {
 	private Game game;
 	
 	//TODO - Support for TotalEconomy
+	/**
+	 * Provides easy-to-use economy integration
+	 * @param game
+	 * 	The game object
+	 */
 	public EconomyManager(Game game) {
 		this.game = game;
 	}

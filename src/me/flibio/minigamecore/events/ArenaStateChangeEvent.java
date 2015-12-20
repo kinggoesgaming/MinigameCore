@@ -3,6 +3,7 @@ package me.flibio.minigamecore.events;
 import me.flibio.minigamecore.arena.Arena;
 
 import org.spongepowered.api.event.Cancellable;
+import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.impl.AbstractEvent;
 
 public class ArenaStateChangeEvent extends AbstractEvent implements Cancellable {
@@ -36,6 +37,11 @@ public class ArenaStateChangeEvent extends AbstractEvent implements Cancellable 
 	@Override
 	public void setCancelled(boolean cancel) {
 		this.cancelled = cancel;
+	}
+
+	@Override
+	public Cause getCause() {
+		return Cause.of("MinigameCore");
 	}
 	
 }

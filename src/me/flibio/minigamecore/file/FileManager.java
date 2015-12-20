@@ -37,7 +37,7 @@ public class FileManager {
 	 * @return
 	 * 	If the method was successful or not
 	 */
-	public boolean generateFolder(String name) {
+	private boolean generateFolder(String name) {
 		File folder = new File(name);
 		try {
 			if(!folder.exists()) {
@@ -65,6 +65,9 @@ public class FileManager {
 	 * 	If the method was successful or not
 	 */
 	public boolean initializeFile(String fileName) {
+		if(fileName.contains(".conf")) {
+			fileName = fileName.replace(".conf", "").trim();
+		}
 		if(generateFolder(this.name)) {
 			if(!files.containsKey(fileName)) {
 				//File isn't registered
@@ -107,6 +110,36 @@ public class FileManager {
 	}
 	
 	/**
+	 * Adds a default option to the specified file. Allows for "." seperators 
+	 * in the key path. If the specified path has no value set, method will 
+	 * set it to the default value specified.
+	 * @param fileName
+	 * 	The name of the file
+	 * @param key
+	 * 	The path of the default option
+	 * @param value
+	 * 	The default value of the option
+	 * @return
+	 * 	If the method was successful or not
+	 */
+	public boolean defaultOption(String fileName, String key, Object value) {
+		if(fileName.contains(".conf")) {
+			fileName = fileName.replace(".conf", "").trim();
+		}
+		Optional<ConfigurationNode> fileOptional = getFile(fileName);
+		if(fileOptional.isPresent()) {
+			ConfigurationNode file = fileOptional.get();
+			if(file.getNode((Object[]) key.split("\\.")).getValue()==null) {
+				file.getNode((Object[]) key.split("\\.")).setValue(value);
+				saveFile(fileName,file);
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
 	 * Saves a file. Writes to disk and updates the list of files.
 	 * @param fileName
 	 * 	The name of the file to save
@@ -116,6 +149,9 @@ public class FileManager {
 	 * 	If the method was successful or not
 	 */
 	public boolean saveFile(String fileName, ConfigurationNode fileData) {
+		if(fileName.contains(".conf")) {
+			fileName = fileName.replace(".conf", "").trim();
+		}
 		File file = new File("config/"+this.name+"/"+fileName+".conf");
 		if(file.exists()) {
 			ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
@@ -140,6 +176,9 @@ public class FileManager {
 	 * 	The ConfigurationNode of the file
 	 */
 	public Optional<ConfigurationNode> getFile(String name) {
+		if(name.contains(".conf")) {
+			name = name.replace(".conf", "").trim();
+		}
 		if(files.containsKey(name)) {
 			return Optional.of(files.get(name));
 		} else {

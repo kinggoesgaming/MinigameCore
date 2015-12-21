@@ -38,7 +38,7 @@ public class FileManager {
 	 * 	If the method was successful or not
 	 */
 	private boolean generateFolder(String name) {
-		File folder = new File(name);
+		File folder = new File("config/"+name);
 		try {
 			if(!folder.exists()) {
 				if(folder.mkdir()) {

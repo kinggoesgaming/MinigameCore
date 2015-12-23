@@ -27,6 +27,7 @@ public class Arena {
 	private ConcurrentHashMap<ArenaState,Runnable> runnables = new ConcurrentHashMap<ArenaState,Runnable>();
 	
 	private HashMap<String,Object> customVariables = new HashMap<String,Object>();
+	private HashMap<String,Location<World>> customLocations = new HashMap<String,Location<World>>();
 	private Location<World> lobbySpawnLocation;
 	private Location<World> failedJoinLocation;
 	private ConcurrentHashMap<String, Location<World>> spawnLocations = new ConcurrentHashMap<String, Location<World>>();
@@ -567,12 +568,48 @@ public class Arena {
 	}
 	
 	/**
-	 * Returns all of the custom variables stored with the arena
+	 * Gets all of the custom variables stored with the arena
 	 * @return
 	 * 	A HashMap of all of the custom variables
 	 */
 	public HashMap<String,Object> getCustomVariables() {
 		final HashMap<String,Object> toReturn = this.customVariables;
+		return toReturn;
+	}
+	
+	/**
+	 * Sets a custom location. Saved with the arena data.
+	 * @param key
+	 * 	The key used to retrieve the location
+	 * @param location
+	 * 	The location to be saved
+	 */
+	public void setLocation(String key, Location<World> location) {
+		customLocations.put(key, location);
+	}
+	
+	/**
+	 * Gets a location using the specified key
+	 * @param key
+	 * 	The key of the location to get
+	 * @return
+	 * 	The location, if found
+	 */
+	public Optional<Location<World>> getLocation(String key) {
+		if(customLocations.containsKey(key)) {
+			return Optional.of(customLocations.get(key));
+		} else {
+			return Optional.empty();
+		}
+	}
+	
+	/**
+	 * Gets all of the custom locations stored with the arena
+	 * @return
+	 * 	A HashMap of all of the custom locations
+	 */
+	public HashMap<String,Location<World>> getCustomLocations() {
+		final HashMap<String,Location<World>> toReturn = this.customLocations;
 		return toReturn;
 	}
 

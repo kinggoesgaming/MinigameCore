@@ -201,8 +201,17 @@ public class FileManager {
 			arenaNode.getNode("minPl").setValue(options.getMinPlayers());
 			arenaNode.getNode("maxPl").setValue(options.getMaxPlayers());
 			arenaNode.getNode("lobbyCtdnTime").setValue(options.getLobbyCountdownTime());
+			arenaNode.getNode("dedicated").setValue(options.isDedicatedServer());
+			arenaNode.getNode("dfltPlEvActions").setValue(options.isDefaultPlayerEventActions());
+			arenaNode.getNode("dfltStChActions").setValue(options.isDefaultStateChangeActions());
+			arenaNode.getNode("endGameDelay").setValue(options.isEndGameDelay());
+			arenaNode.getNode("endGameSpec").setValue(options.isEndGameSpectator());
+			arenaNode.getNode("triggerPlEvents").setValue(options.isTriggerPlayerEvents());
 			for(String spawn : arena.getSpawnLocations().keySet()) {
 				saveLoc(arenaNode.getNode("spawns").getNode(spawn),arena.getSpawnLocations().get(spawn));
+			}
+			for(String key : arena.getCustomLocations().keySet()) {
+				saveLoc(arenaNode.getNode("customLoc").getNode(key),arena.getCustomLocations().get(key));
 			}
 			for(String key : arena.getCustomVariables().keySet()) {
 				arenaNode.getNode("custom").getNode(key).setValue(arena.getCustomVariables().get(key));

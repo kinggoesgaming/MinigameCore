@@ -331,12 +331,25 @@ public class Arena {
 	
 	/**
 	 * Sets the location a player will teleport to if 
-	 * they failed to join the arena(Non-Dedicated Arenas Only)
+	 * they failed to join the arena (Non-Dedicated Arenas Only)
 	 * @param location
 	 * 	The location to set the failed join location to
 	 */
 	public void setFailedJoinLocation(Location<World> location) {
 		failedJoinLocation = location;
+	}
+	
+	/**
+	 * Gets the failed join location (Non-Dedicated Arenas Only)
+	 * @return
+	 * 	The failed join location, if present
+	 */
+	public Optional<Location<World>> getFailedJoinLocation() {
+		if(failedJoinLocation==null) {
+			return Optional.empty();
+		} else {
+			return Optional.of(failedJoinLocation);
+		}
 	}
 	
 	/**
@@ -485,7 +498,7 @@ public class Arena {
 	/**
 	 * Gets the lobby spawn location of the arena
 	 * @return
-	 * 	The lobby spawn location
+	 * 	The lobby spawn location, if present
 	 */
 	public Optional<Location<World>> getLobbySpawnLocation() {
 		if(lobbySpawnLocation==null) {

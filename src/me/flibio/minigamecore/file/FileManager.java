@@ -1,5 +1,6 @@
 package me.flibio.minigamecore.file;
 
+import me.Flibio.EconomyLite.Main;
 import me.flibio.minigamecore.arena.Arena;
 import me.flibio.minigamecore.arena.ArenaOptions;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -12,6 +13,7 @@ import org.spongepowered.api.world.World;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -190,6 +192,15 @@ public class FileManager {
 		}
 	}
 	
+	/**
+	 * Saves an arena to the file
+	 * @param arena
+	 * 	The arena to save
+	 * @param fileName
+	 * 	The location to save the arena
+	 * @return
+	 * 	If arena was saved successfully or not
+	 */
 	public boolean saveArena(Arena arena, String fileName) {
 		initializeFile(fileName);
 		Optional<ConfigurationNode> fopt = getFile(fileName);
@@ -198,6 +209,7 @@ public class FileManager {
 			ArenaOptions options = arena.getOptions();
 			String arenaName = options.getName();
 			ConfigurationNode arenaNode = file.getNode(arenaName);
+			file.setValue(null);
 			arenaNode.getNode("minPl").setValue(options.getMinPlayers());
 			arenaNode.getNode("maxPl").setValue(options.getMaxPlayers());
 			arenaNode.getNode("lobbyCtdnTime").setValue(options.getLobbyCountdownTime());
@@ -207,6 +219,12 @@ public class FileManager {
 			arenaNode.getNode("endGameDelay").setValue(options.isEndGameDelay());
 			arenaNode.getNode("endGameSpec").setValue(options.isEndGameSpectator());
 			arenaNode.getNode("triggerPlEvents").setValue(options.isTriggerPlayerEvents());
+			if(arena.getLobbySpawnLocation().isPresent()) {
+				saveLoc(arenaNode.getNode("lobbySpawn"),arena.getLobbySpawnLocation().get());
+			}
+			if(arena.getFailedJoinLocation().isPresent()) {
+				saveLoc(arenaNode.getNode("failedJoin"),arena.getFailedJoinLocation().get());
+			}
 			for(String spawn : arena.getSpawnLocations().keySet()) {
 				saveLoc(arenaNode.getNode("spawns").getNode(spawn),arena.getSpawnLocations().get(spawn));
 			}
@@ -216,11 +234,94 @@ public class FileManager {
 			for(String key : arena.getCustomVariables().keySet()) {
 				arenaNode.getNode("custom").getNode(key).setValue(arena.getCustomVariables().get(key));
 			}
-			saveFile(fileName,file);
-			return true;
+			return saveFile(fileName,file);
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Loads all arenas from a specified file
+	 * @param fileName
+	 * 	The file to load arenas from
+	 * @return
+	 * 	All arenas found in the file
+	 */
+	public ArrayList<Arena> loadArenas(String fileName) {
+		initializeFile(fileName);
+		Optional<ConfigurationNode> fopt = getFile(fileName);
+		ArrayList<Arena> arenas = new ArrayList<Arena>();
+		if(fopt.isPresent()) {
+			ConfigurationNode file = fopt.get();
+			for(String child : getChildren(file)) {
+				ConfigurationNode arenaNode = file.getNode(child);
+				Arena arena = new Arena(child,Main.access.game,Main.access);
+				//Load all the saved value stored with the arena
+				try {
+					arena.getOptions().setMinPlayers(arenaNode.getNode("minPl").getInt());
+					arena.getOptions().setMaxPlayers(arenaNode.getNode("maxPl").getInt());
+					arena.getOptions().setLobbyCountdownTime(arenaNode.getNode("lobbyCtdnTime").getInt());
+					arena.getOptions().setDedicatedServer(arenaNode.getNode("dedicated").getBoolean());
+					arena.getOptions().setDefaultPlayerEventActions(arenaNode.getNode("dfltPlEvActions").getBoolean());
+					arena.getOptions().setDefaultStateChangeActions(arenaNode.getNode("dfltStChActions").getBoolean());
+					arena.getOptions().setEndGameDelay(arenaNode.getNode("endGameDelay").getBoolean());
+					arena.getOptions().setEndGameSpectator(arenaNode.getNode("endGameSpec").getBoolean());
+					arena.getOptions().setTriggerPlayerEvents(arenaNode.getNode("triggerPlEvents").getBoolean());
+					if(arenaNode.getNode("lobbySpawn")!=null) {
+						Optional<Location<World>> oLoc = loadLoc(arenaNode.getNode("lobbySpawn"));
+						if(oLoc.isPresent()) {
+							arena.setLobbySpawnLocation(oLoc.get());
+						}
+					}
+					if(arenaNode.getNode("failedJoin")!=null) {
+						Optional<Location<World>> oLoc = loadLoc(arenaNode.getNode("failedJoin"));
+						if(oLoc.isPresent()) {
+							arena.setFailedJoinLocation(oLoc.get());
+						}
+					}
+					//Check for custom variables
+					if(arenaNode.getNode("custom")!=null) {
+						for(String customVar : getChildren(arenaNode.getNode("custom"))) {
+							ConfigurationNode customNode = arenaNode.getNode("custom");
+							Object rawVal = customNode.getNode(customVar).getValue();
+							if(rawVal instanceof String) {
+								arena.setVariable(customVar, (String) rawVal);
+							} else if(rawVal instanceof Integer) {
+								arena.setVariable(customVar, (int) rawVal);
+							} else if(rawVal instanceof Boolean) {
+								arena.setVariable(customVar, (boolean) rawVal);
+							} else if(rawVal instanceof Double) {
+								arena.setVariable(customVar, (double) rawVal);
+							} else if(rawVal instanceof Float) {
+								arena.setVariable(customVar, (float) rawVal);
+							}
+						}
+					}
+					//Check for custom locations
+					if(arenaNode.getNode("customLoc")!=null) {
+						for(String locName : getChildren(arenaNode.getNode("customLoc"))) {
+							Optional<Location<World>> oLoc = loadLoc(arenaNode.getNode("customLoc").getNode(locName));
+							if(oLoc.isPresent()) {
+								arena.setLocation(locName, oLoc.get());
+							}
+						}
+					}
+					//Check for spawn locations
+					if(arenaNode.getNode("spawns")!=null) {
+						for(String locName : getChildren(arenaNode.getNode("spawns"))) {
+							Optional<Location<World>> oLoc = loadLoc(arenaNode.getNode("spawns").getNode(locName));
+							if(oLoc.isPresent()) {
+								arena.addSpawnLocation(locName, oLoc.get());
+							}
+						}
+					}
+					arenas.add(arena);
+				} catch(Exception e) {
+					Main.access.logger.error("Corrupt arena data for arena "+child+"!");
+				}
+			}
+		}
+		return arenas;
 	}
 	
 	private void saveLoc(ConfigurationNode node,Location<World> loc) {
@@ -228,5 +329,30 @@ public class FileManager {
 		node.getNode("Y").setValue(loc.getBlockY());
 		node.getNode("Z").setValue(loc.getBlockZ());
 		node.getNode("w").setValue(loc.getExtent().getName());
+	}
+	
+	private Optional<Location<World>> loadLoc(ConfigurationNode node) {
+		ConfigurationNode x = node.getNode("X");
+		ConfigurationNode y = node.getNode("Y");
+		ConfigurationNode z = node.getNode("Z");
+		ConfigurationNode world = node.getNode("w");
+		if(x==null||y==null||z==null||world==null||!Main.access.game.getServer().getWorld(world.getString()).isPresent()) {
+			return Optional.empty();
+		}
+		try {
+			return Optional.of(new Location<World>(Main.access.game.getServer().getWorld(world.getString()).get(),x.getInt(),y.getInt(),z.getInt()));
+		} catch(Exception e) {
+			return Optional.empty();
+		}
+	}
+	
+	private ArrayList<String> getChildren(ConfigurationNode node) {
+		ArrayList<String> children = new ArrayList<String>();
+		for(Object raw : node.getChildrenMap().keySet()) {
+			if(raw instanceof String) {
+				children.add((String) raw);
+			}
+		}
+		return children;
 	}
 }

@@ -14,6 +14,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,6 +26,7 @@ public class Arena {
 	private CopyOnWriteArrayList<ArenaState> arenaStates = new CopyOnWriteArrayList<ArenaState>(getDefaultArenaStates());
 	private ConcurrentHashMap<ArenaState,Runnable> runnables = new ConcurrentHashMap<ArenaState,Runnable>();
 	
+	private HashMap<String,Object> customVariables = new HashMap<String,Object>();
 	private Location<World> lobbySpawnLocation;
 	private Location<World> failedJoinLocation;
 	private ConcurrentHashMap<String, Location<World>> spawnLocations = new ConcurrentHashMap<String, Location<World>>();
@@ -477,6 +479,101 @@ public class Arena {
 	 */
 	public void setLobbySpawnLocation(Location<World> location) {
 		lobbySpawnLocation = location;
+	}
+	
+	/**
+	 * Gets the lobby spawn location of the arena
+	 * @return
+	 * 	The lobby spawn location
+	 */
+	public Optional<Location<World>> getLobbySpawnLocation() {
+		if(lobbySpawnLocation==null) {
+			return Optional.empty();
+		} else {
+			return Optional.of(lobbySpawnLocation);
+		}
+	}
+	
+	//Custom Variables
+	
+	/**
+	 * Sets a custom variable. Saved with the arena data.
+	 * @param key
+	 * 	The key used to retrieve the value
+	 * @param value
+	 * 	The value to be saved
+	 */
+	public void setVariable(String key, String value) {
+		customVariables.put(key, value);
+	}
+	
+	/**
+	 * Sets a custom variable. Saved with the arena data.
+	 * @param key
+	 * 	The key used to retrieve the value
+	 * @param value
+	 * 	The value to be saved
+	 */
+	public void setVariable(String key, int value) {
+		customVariables.put(key, value);
+	}
+	
+	/**
+	 * Sets a custom variable. Saved with the arena data.
+	 * @param key
+	 * 	The key used to retrieve the value
+	 * @param value
+	 * 	The value to be saved
+	 */
+	public void setVariable(String key, boolean value) {
+		customVariables.put(key, value);
+	}
+	
+	/**
+	 * Sets a custom variable. Saved with the arena data.
+	 * @param key
+	 * 	The key used to retrieve the value
+	 * @param value
+	 * 	The value to be saved
+	 */
+	public void setVariable(String key, double value) {
+		customVariables.put(key, value);
+	}
+	
+	/**
+	 * Sets a custom variable. Saved with the arena data.
+	 * @param key
+	 * 	The key used to retrieve the value
+	 * @param value
+	 * 	The value to be saved
+	 */
+	public void setVariable(String key, float value) {
+		customVariables.put(key, value);
+	}
+	
+	/**
+	 * Retrieves a value using the specified key
+	 * @param key
+	 * 	The key to use to retrieve the value
+	 * @return
+	 * 	The value, if found
+	 */
+	public Optional<Object> getVariable(String key) {
+		if(customVariables.containsKey(key)) {
+			return Optional.of(customVariables.get(key));
+		} else {
+			return Optional.empty();
+		}
+	}
+	
+	/**
+	 * Returns all of the custom variables stored with the arena
+	 * @return
+	 * 	A HashMap of all of the custom variables
+	 */
+	public HashMap<String,Object> getCustomVariables() {
+		final HashMap<String,Object> toReturn = this.customVariables;
+		return toReturn;
 	}
 
 	//Listeners

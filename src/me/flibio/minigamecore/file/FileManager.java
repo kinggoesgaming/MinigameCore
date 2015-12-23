@@ -1,10 +1,14 @@
 package me.flibio.minigamecore.file;
 
+import me.flibio.minigamecore.arena.Arena;
+import me.flibio.minigamecore.arena.ArenaOptions;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.io.File;
 import java.io.IOException;
@@ -184,5 +188,36 @@ public class FileManager {
 		} else {
 			return Optional.empty();
 		}
+	}
+	
+	public boolean saveArena(Arena arena, String fileName) {
+		initializeFile(fileName);
+		Optional<ConfigurationNode> fopt = getFile(fileName);
+		if(fopt.isPresent()) {
+			ConfigurationNode file = fopt.get();
+			ArenaOptions options = arena.getOptions();
+			String arenaName = options.getName();
+			ConfigurationNode arenaNode = file.getNode(arenaName);
+			arenaNode.getNode("minPl").setValue(options.getMinPlayers());
+			arenaNode.getNode("maxPl").setValue(options.getMaxPlayers());
+			arenaNode.getNode("lobbyCtdnTime").setValue(options.getLobbyCountdownTime());
+			for(String spawn : arena.getSpawnLocations().keySet()) {
+				saveLoc(arenaNode.getNode("spawns").getNode(spawn),arena.getSpawnLocations().get(spawn));
+			}
+			for(String key : arena.getCustomVariables().keySet()) {
+				arenaNode.getNode("custom").getNode(key).setValue(arena.getCustomVariables().get(key));
+			}
+			saveFile(fileName,file);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private void saveLoc(ConfigurationNode node,Location<World> loc) {
+		node.getNode("X").setValue(loc.getBlockX());
+		node.getNode("Y").setValue(loc.getBlockY());
+		node.getNode("Z").setValue(loc.getBlockZ());
+		node.getNode("w").setValue(loc.getExtent().getName());
 	}
 }

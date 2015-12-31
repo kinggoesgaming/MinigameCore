@@ -1,13 +1,14 @@
 package me.flibio.minigamecore.file;
 
-import me.Flibio.EconomyLite.Main;
 import me.flibio.minigamecore.arena.Arena;
 import me.flibio.minigamecore.arena.ArenaOptions;
+import me.flibio.minigamecore.main.MinigameCore;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -22,6 +23,7 @@ public class FileManager {
 	private ConcurrentHashMap<String, ConfigurationNode> files = new ConcurrentHashMap<String, ConfigurationNode>();
 	
 	private Logger logger;
+	private Game game;
 	private String name;
 	
 	/**
@@ -31,8 +33,9 @@ public class FileManager {
 	 * @param name
 	 * 	The name of the game
 	 */
-	public FileManager(Logger logger, String name) {
+	public FileManager(Logger logger, Game game, String name) {
 		this.logger = logger;
+		this.game = game;
 		this.name = name;
 	}
 	
@@ -255,7 +258,7 @@ public class FileManager {
 			ConfigurationNode file = fopt.get();
 			for(String child : getChildren(file)) {
 				ConfigurationNode arenaNode = file.getNode(child);
-				Arena arena = new Arena(child,Main.access.game,Main.access);
+				Arena arena = new Arena(child,game,MinigameCore.access);
 				//Load all the saved value stored with the arena
 				try {
 					arena.getOptions().setMinPlayers(arenaNode.getNode("minPl").getInt());
@@ -317,7 +320,7 @@ public class FileManager {
 					}
 					arenas.add(arena);
 				} catch(Exception e) {
-					Main.access.logger.error("Corrupt arena data for arena "+child+"!");
+					logger.error("Corrupt arena data for arena "+child+"!");
 				}
 			}
 		}
@@ -336,11 +339,12 @@ public class FileManager {
 		ConfigurationNode y = node.getNode("Y");
 		ConfigurationNode z = node.getNode("Z");
 		ConfigurationNode world = node.getNode("w");
-		if(x==null||y==null||z==null||world==null||!Main.access.game.getServer().getWorld(world.getString()).isPresent()) {
+		if(x==null||y==null||z==null||world==null||!game.getServer().getWorld(world.getString()).isPresent()) {
 			return Optional.empty();
 		}
 		try {
-			return Optional.of(new Location<World>(Main.access.game.getServer().getWorld(world.getString()).get(),x.getInt(),y.getInt(),z.getInt()));
+			return Optional.of(new Location<World>(game.getServer().getWorld(world.getString()).get(),
+					x.getInt(),y.getInt(),z.getInt()));
 		} catch(Exception e) {
 			return Optional.empty();
 		}

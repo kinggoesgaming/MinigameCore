@@ -1,6 +1,7 @@
 package me.flibio.minigamecore.main;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -11,10 +12,24 @@ import com.google.inject.Inject;
 public class MinigameCore {
 	
 	@Inject
-	Logger logger;
+	private Logger logger;
+	
+	@Inject
+	private Game game;
+	
+	public static MinigameCore access;
 	
 	@Listener
 	public void onServerInitialize(GamePreInitializationEvent event) {
-		logger.info("Initializing MinigameCore Build #${BUILD_NUMBER}");
+		access = this;
+		logger.info("Initializing MinigameCore...");
+	}
+	
+	public Logger getLogger() {
+		return this.logger;
+	}
+	
+	public Game getGame() {
+		return this.game;
 	}
 }

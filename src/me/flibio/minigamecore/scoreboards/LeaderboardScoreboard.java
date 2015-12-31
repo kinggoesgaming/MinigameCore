@@ -139,10 +139,9 @@ public class LeaderboardScoreboard extends MinigameCoreScoreboard {
 	public void displayToPlayer(Player player) {
 		obj.setDisplayName(displayName);
 		for(String leader : leaders.keySet()) {
-			obj.getScore(Texts.of(nameColor, leader)).setScore(leaders.get(leader));
+			obj.getOrCreateScore(Texts.of(nameColor, leader)).setScore(leaders.get(leader));
 		}
-		scoreboard.addObjective(obj);
-		scoreboard.addObjective(obj, DisplaySlots.SIDEBAR);
+		scoreboard.updateDisplaySlot(obj, DisplaySlots.SIDEBAR);
 		player.setScoreboard(scoreboard);
 	}
 }

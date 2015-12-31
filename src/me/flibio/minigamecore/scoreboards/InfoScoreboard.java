@@ -88,10 +88,9 @@ public class InfoScoreboard extends MinigameCoreScoreboard {
 	public void displayToPlayer(Player player) {
 		obj.setDisplayName(displayName);
 		for(Integer line : lines.keySet()) {
-			obj.getScore(lines.get(line)).setScore(line);
+			obj.getOrCreateScore(lines.get(line)).setScore(line);
 		}
-		scoreboard.addObjective(obj);
-		scoreboard.addObjective(obj, DisplaySlots.SIDEBAR);
+		scoreboard.updateDisplaySlot(obj, DisplaySlots.SIDEBAR);
 		player.setScoreboard(scoreboard);
 	}
 }

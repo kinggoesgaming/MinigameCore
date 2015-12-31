@@ -42,7 +42,7 @@ public class Minigame {
 		//Initialize Managers
 		this.arenaManager = new ArenaManager();
 		this.economyManager = new EconomyManager(this.game);
-		this.fileManager = new FileManager(this.logger, this.name);
+		this.fileManager = new FileManager(this.logger, this.game, this.name);
 		this.kitManager = new KitManager();
 		this.scoreboardManager = new ScoreboardManager(this.game);
 		this.teamManager = new TeamManager();

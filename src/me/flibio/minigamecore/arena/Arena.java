@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Arena {
+public abstract class Arena {
 
 	private CopyOnWriteArrayList<ArenaState> arenaStates = new CopyOnWriteArrayList<ArenaState>(getDefaultArenaStates());
 	private ConcurrentHashMap<ArenaState,Runnable> runnables = new ConcurrentHashMap<ArenaState,Runnable>();
@@ -52,18 +52,14 @@ public class Arena {
 	 * @param player
 	 * 	The player to add
 	 */
-	public void addOnlinePlayer(Player player) {
-		onlinePlayers.add(player);
-	}
+	public abstract void addOnlinePlayer(Player player);
 	
 	/**
 	 * Removes an online player
 	 * @param player
 	 * 	The player to remove
 	 */
-	public void removeOnlinePlayer(Player player) {
-		onlinePlayers.remove(player);
-	}
+	public abstract void removeOnlinePlayer(Player player);
 	
 	/**
 	 * Gets all of the players in an arena

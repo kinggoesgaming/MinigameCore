@@ -3,6 +3,8 @@ package me.flibio.minigamecore.arena;
 import me.flibio.minigamecore.events.ArenaStateChangeEvent;
 
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -260,6 +262,30 @@ public abstract class Arena {
 	public Text deserialize(String text, String old, String replacement) {
 		text.replaceAll(old, replacement);
 		return TextSerializers.TEXT_XML.deserialize(text);
+	}
+	
+	/**
+	 * Broadcasts the message to the entire server
+	 * @param text
+	 * 	The text to broadcast
+	 */
+	public void broadcast(Text text) {
+		Sponge.getGame().getServer().getBroadcastChannel().send(text);
+	}
+	
+	/**
+	 * Plays a sound to all players in the game
+	 * @param type
+	 * 	The type of sound to play
+	 * @param volume
+	 * 	The volume of the sound
+	 * @param pitch
+	 * 	The pitch of the sound
+	 */
+	public void broadcastSound(SoundType type, int volume, int pitch) {
+		for(Player player : onlinePlayers) {
+			player.playSound(type, player.getLocation().getPosition(), volume, pitch);
+		}
 	}
 
 	//Listeners

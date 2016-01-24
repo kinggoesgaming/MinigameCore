@@ -3,14 +3,11 @@ package me.flibio.minigamecore.arena;
 import me.flibio.minigamecore.events.ArenaStateChangeEvent;
 
 import org.spongepowered.api.Game;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -23,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class Arena {
 
@@ -36,16 +32,12 @@ public class Arena {
 	private Location<World> failedJoinLocation;
 	private ConcurrentHashMap<String, Location<World>> spawnLocations = new ConcurrentHashMap<String, Location<World>>();
 	private CopyOnWriteArrayList<Player> onlinePlayers = new CopyOnWriteArrayList<Player>();
-	private int currentLobbyCountdown;
-	private Task lobbyCountdownTask;
 	private ArenaState arenaState;
 	
 	private ArenaOptions arenaOptions;
 	
 	private Game game;
-	private Object plugin;
-	
-	//TODO - Scoreboard implementation throughout arena
+
 	/**
 	 * An arena is an object that can handle spawn locations, lobbies, games, and more.
 	 * @param arenaName
@@ -58,7 +50,6 @@ public class Arena {
 	public Arena(String arenaName, Game game, Object plugin) {
 		this.arenaOptions = new ArenaOptions(arenaName);
 		this.game = game;
-		this.plugin = plugin;
 		this.arenaState = ArenaStates.LOBBY_WAITING;
 		
 		game.getEventManager().registerListeners(plugin, this);
@@ -70,54 +61,7 @@ public class Arena {
 	 * 	The player to add
 	 */
 	public void addOnlinePlayer(Player player) {
-		if(arenaOptions.isDefaultPlayerEventActions()) {
-			//Check if the game is in the correct state
-			if(arenaState.equals(ArenaStates.LOBBY_WAITING)||arenaState.equals(ArenaStates.LOBBY_COUNTDOWN)) {
-				if(onlinePlayers.size()>=arenaOptions.getMaxPlayers()) {
-					//Lobby is full
-					if(arenaOptions.isDedicatedServer()) {
-						//Kick the player
-						player.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyFull));
-					} else {
-						//Try to teleport the player to the failed join location
-						if(failedJoinLocation!=null) {
-							player.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyFull));
-							player.setLocation(failedJoinLocation);
-						} else {
-							player.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyFull));
-						}
-					}
-				} else {
-					//Player can join
-					onlinePlayers.add(player);
-					Text msg = TextSerializers.TEXT_XML.deserialize(arenaOptions.playerJoined.replaceAll("%name%", player.getName()));
-					for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-						onlinePlayer.sendMessage(msg);
-					}
-					if(lobbySpawnLocation!=null) {
-						player.setLocation(lobbySpawnLocation);
-					}
-					if(arenaState.equals(ArenaStates.LOBBY_WAITING)&&onlinePlayers.size()>=arenaOptions.getMinPlayers()) {
-						arenaStateChange(ArenaStates.LOBBY_COUNTDOWN);
-					}
-				}
-			} else {
-				if(arenaOptions.isDedicatedServer()) {
-					//Kick the player
-					player.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameInProgress));
-				} else {
-					//Try to teleport the player to the failed join location
-					if(failedJoinLocation!=null) {
-						player.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameInProgress));
-						player.setLocation(failedJoinLocation);
-					} else {
-						player.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameInProgress));
-					}
-				}
-			}
-		} else {
-			onlinePlayers.add(player);
-		}
+		onlinePlayers.add(player);
 	}
 	
 	/**
@@ -127,15 +71,6 @@ public class Arena {
 	 */
 	public void removeOnlinePlayer(Player player) {
 		onlinePlayers.remove(player);
-		if(arenaOptions.isDefaultPlayerEventActions()) {
-			if(arenaState.equals(ArenaStates.LOBBY_COUNTDOWN)&&onlinePlayers.size()<arenaOptions.getMinPlayers()) {
-				arenaStateChange(ArenaStates.COUNTDOWN_CANCELLED);
-			}
-			Text msg = TextSerializers.TEXT_XML.deserialize(arenaOptions.playerQuit.replaceAll("%name%", player.getName()));
-			for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-				onlinePlayer.sendMessage(msg);
-			}
-		}
 	}
 	
 	/**
@@ -162,96 +97,6 @@ public class Arena {
 		//Run a runnable if it is set
 		if(arenaStateRunnableExists(changeTo)) {
 			runnables.get(changeTo).run();
-		}
-		//Run default actions ifthey are enabled
-		if(arenaOptions.isDefaultStateChangeActions()) {
-			if(arenaState.equals(ArenaStates.LOBBY_COUNTDOWN)) {
-				currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
-				Text msg = TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyCountdownStarted.replaceAll("%time%",""+currentLobbyCountdown));
-				for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-					onlinePlayer.sendMessage(msg);
-				}
-				//Register task the run the countdown every 1 second
-				lobbyCountdownTask = game.getScheduler().createTaskBuilder().execute(new Runnable() {
-					@Override
-					public void run() {
-						if(currentLobbyCountdown==0) {
-							arenaStateChange(ArenaStates.GAME_COUNTDOWN);
-							lobbyCountdownTask.cancel();
-							return;
-						}
-						if(arenaOptions.getLobbyCountdownTime()/2==currentLobbyCountdown||
-								currentLobbyCountdown<=10) {
-							//Send a message
-							Text msg = TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyCountdownProgress
-									.replaceAll("%time%",""+currentLobbyCountdown));
-							for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-								onlinePlayer.sendMessage(msg);
-							}
-						}
-						currentLobbyCountdown--;
-					}
-				}).async().interval(1,TimeUnit.SECONDS).submit(plugin);
-			} else if(arenaState.equals(ArenaStates.COUNTDOWN_CANCELLED)) {
-				currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
-				if(lobbyCountdownTask!=null) {
-					lobbyCountdownTask.cancel();
-				}
-				arenaState = ArenaStates.LOBBY_WAITING;
-				for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-					onlinePlayer.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyCountdownCancelled));
-				}
-			} else if(arenaState.equals(ArenaStates.GAME_COUNTDOWN)) {
-				currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
-				//TODO
-				arenaStateChange(ArenaStates.GAME_PLAYING);
-			} else if(arenaState.equals(ArenaStates.GAME_OVER)) {
-				for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-					onlinePlayer.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameOver));
-					//End game spectator only works with end game delay on
-					if(arenaOptions.isEndGameDelay()&&arenaOptions.isEndGameSpectator()) {
-						//TODO - Save the gamemode
-						onlinePlayer.offer(Keys.GAME_MODE,GameModes.SPECTATOR);
-					}
-				}
-				if(arenaOptions.isEndGameDelay()) {
-					game.getScheduler().createTaskBuilder().execute(new Runnable() {
-						@Override
-						public void run() {
-							for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-								onlinePlayer.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameOver));
-								if(arenaOptions.isEndGameSpectator()) {
-									//TODO load the gamemode
-									onlinePlayer.offer(Keys.GAME_MODE,GameModes.SURVIVAL);
-								}
-								if(arenaOptions.isDedicatedServer()) {
-									onlinePlayer.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameOver));
-								} else {
-									if(lobbySpawnLocation!=null) {
-										onlinePlayer.setLocation(lobbySpawnLocation);
-									}
-								}
-							}
-						}
-					}).async().delay(5,TimeUnit.SECONDS).submit(plugin);
-				} else {
-					//No delay
-					for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-						onlinePlayer.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameOver));
-						if(arenaOptions.isEndGameSpectator()) {
-							//TODO load the gamemode
-							onlinePlayer.offer(Keys.GAME_MODE,GameModes.SURVIVAL);
-						}
-						if(arenaOptions.isDedicatedServer()) {
-							onlinePlayer.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameOver));
-						} else {
-							if(lobbySpawnLocation!=null) {
-								onlinePlayer.setLocation(lobbySpawnLocation);
-							}
-						}
-					}
-				}
-			}
 		}
 	}
 	
@@ -511,6 +356,35 @@ public class Arena {
 		} else {
 			return Optional.of(lobbySpawnLocation);
 		}
+	}
+	
+	/**
+	 * Deserializes XML formatted text. Used with the text in the
+	 * {@link ArenaOptions} class.
+	 * @param text
+	 * 	The text to deserialize
+	 * @return
+	 * 	The deserialzed text
+	 */
+	public Text deserialize(String text) {
+		return TextSerializers.TEXT_XML.deserialize(text);
+	}
+	
+	/**
+	 * Deserializes XML formatted text. Used with the text in the
+	 * {@link ArenaOptions} class.
+	 * @param text
+	 * 	The text to deserialize
+	 * @param old
+	 * 	The string to replace before deserialization
+	 * @param replacement
+	 * 	What to replace the string with
+	 * @return
+	 * 	The deserialzed text
+	 */
+	public Text deserialize(String text, String old, String replacement) {
+		text.replaceAll(old, replacement);
+		return TextSerializers.TEXT_XML.deserialize(text);
 	}
 	
 	//Custom Variables

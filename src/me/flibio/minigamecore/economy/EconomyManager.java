@@ -1,29 +1,50 @@
 package me.flibio.minigamecore.economy;
 
-import me.Flibio.EconomyLite.API.EconomyLiteAPI;
+import me.flibio.minigamecore.main.MinigameCore;
 
 import org.spongepowered.api.Game;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
+import org.spongepowered.api.service.economy.Currency;
+import org.spongepowered.api.service.economy.EconomyService;
+import org.spongepowered.api.service.economy.account.UniqueAccount;
+import org.spongepowered.api.service.economy.transaction.ResultType;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
 public class EconomyManager {
 	
-	private boolean firstRun = true;
-	private boolean economyInstalled = false;
+	private boolean foundProvider = true;
 	
-	private EconomyLiteAPI economyAPI;
+	private EconomyService economy;
 	
-	private Game game;
+	private Cause cause = Cause.of("MinigameCore");
+	private Currency currency;
 	
-	//TODO - Support for TotalEconomy
 	/**
 	 * Provides easy-to-use economy integration
 	 * @param game
 	 * 	The game object
 	 */
 	public EconomyManager(Game game) {
-		this.game = game;
+		game.getEventManager().registerListeners(MinigameCore.access, this);
+	}
+	
+	@Listener
+	public void onChangeServiceProvider(ChangeServiceProviderEvent event) {
+		if(event.getService().equals(EconomyService.class)&&!foundProvider) {
+			Object raw = event.getNewProviderRegistration().getProvider();
+			if(raw instanceof EconomyService) {
+				foundProvider = true;
+				economy = (EconomyService) raw;
+				currency = economy.getDefaultCurrency();
+			} else {
+				foundProvider = false;
+			}
+		}
 	}
 	
 	/**
@@ -35,17 +56,16 @@ public class EconomyManager {
 	 * @return
 	 * 	Boolean based on if  the method was successful or not
 	 */
-	public boolean setBalance(UUID uuid, double amount) {
-		if(firstRun) {
-			checkForEconomy();
-		}
-		if(!economyInstalled) {
+	public boolean setBalance(UUID uuid, BigDecimal amount) {
+		if(!foundProvider) return false;
+		Optional<UniqueAccount> uOpt = economy.getAccount(uuid);
+		if(!uOpt.isPresent()) return false;
+		UniqueAccount account = uOpt.get();
+		if(account.setBalance(currency, amount, cause).getResult().equals(ResultType.SUCCESS)) {
+			return true;
+		} else {
 			return false;
 		}
-		if(amount<0) {
-			return false;
-		}
-		return economyAPI.getPlayerAPI().setBalance(uuid.toString(), Integer.valueOf((int) Math.round(amount)));
 	}
 	
 	/**
@@ -55,18 +75,12 @@ public class EconomyManager {
 	 * @return
 	 * 	The balance of the player
 	 */
-	public Optional<Double> getBalance(UUID uuid) {
-		if(firstRun) {
-			checkForEconomy();
-		}
-		if(!economyInstalled) {
-			Optional.empty();
-		}
-		int bal = economyAPI.getPlayerAPI().getBalance(uuid.toString());
-		if(bal<0) {
-			return Optional.empty();
-		}
-		return Optional.of((double) bal);
+	public Optional<BigDecimal> getBalance(UUID uuid) {
+		if(!foundProvider) return Optional.empty();
+		Optional<UniqueAccount> uOpt = economy.getAccount(uuid);
+		if(!uOpt.isPresent()) return Optional.empty();
+		UniqueAccount account = uOpt.get();
+		return Optional.of(account.getBalance(currency));
 	}
 	
 	/**
@@ -78,21 +92,16 @@ public class EconomyManager {
 	 * @return
 	 * 	Boolean based on if  the method was successful or not
 	 */
-	public boolean addCurrency(UUID uuid, double amount) {
-		if(firstRun) {
-			checkForEconomy();
-		}
-		if(!economyInstalled) {
+	public boolean addCurrency(UUID uuid, BigDecimal amount) {
+		if(!foundProvider) return false;
+		Optional<UniqueAccount> uOpt = economy.getAccount(uuid);
+		if(!uOpt.isPresent()) return false;
+		UniqueAccount account = uOpt.get();
+		if(account.deposit(currency, amount, cause).getResult().equals(ResultType.SUCCESS)) {
+			return true;
+		} else {
 			return false;
 		}
-		if(amount<0) {
-			return false;
-		}
-		Optional<Double> currentBalance = getBalance(uuid);
-		if(!currentBalance.isPresent()) {
-			return false;
-		}
-		return setBalance(uuid, amount + currentBalance.get());
 	}
 	
 	/**
@@ -104,31 +113,15 @@ public class EconomyManager {
 	 * @return
 	 * 	Boolean based on if  the method was successful or not
 	 */
-	public boolean removeCurrency(UUID uuid, double amount) {
-		if(firstRun) {
-			checkForEconomy();
-		}
-		if(!economyInstalled) {
+	public boolean removeCurrency(UUID uuid, BigDecimal amount) {
+		if(!foundProvider) return false;
+		Optional<UniqueAccount> uOpt = economy.getAccount(uuid);
+		if(!uOpt.isPresent()) return false;
+		UniqueAccount account = uOpt.get();
+		if(account.withdraw(currency, amount, cause).getResult().equals(ResultType.SUCCESS)) {
+			return true;
+		} else {
 			return false;
-		}
-		if(amount<0) {
-			return false;
-		}
-		Optional<Double> currentBalance = getBalance(uuid);
-		if(!currentBalance.isPresent()) {
-			return false;
-		}
-		return setBalance(uuid, currentBalance.get() - amount);
-	}
-	
-	private void checkForEconomy() {
-		firstRun = false;
-		if(game.getPluginManager().getPlugin("EconomyLite").isPresent()) {
-			Optional<EconomyLiteAPI> service = game.getServiceManager().provide(EconomyLiteAPI.class);
-			if(service.isPresent()) {
-				economyInstalled = true;
-				economyAPI = service.get();
-			}
 		}
 	}
 	

@@ -215,12 +215,7 @@ public class FileManager {
 			file.setValue(null);
 			arenaNode.getNode("minPl").setValue(options.getMinPlayers());
 			arenaNode.getNode("maxPl").setValue(options.getMaxPlayers());
-			arenaNode.getNode("lobbyCtdnTime").setValue(options.getLobbyCountdownTime());
 			arenaNode.getNode("dedicated").setValue(options.isDedicatedServer());
-			arenaNode.getNode("dfltPlEvActions").setValue(options.isDefaultPlayerEventActions());
-			arenaNode.getNode("dfltStChActions").setValue(options.isDefaultStateChangeActions());
-			arenaNode.getNode("endGameDelay").setValue(options.isEndGameDelay());
-			arenaNode.getNode("endGameSpec").setValue(options.isEndGameSpectator());
 			arenaNode.getNode("triggerPlEvents").setValue(options.isTriggerPlayerEvents());
 			if(arena.getLobbySpawnLocation().isPresent()) {
 				saveLoc(arenaNode.getNode("lobbySpawn"),arena.getLobbySpawnLocation().get());
@@ -263,12 +258,7 @@ public class FileManager {
 				try {
 					arena.getOptions().setMinPlayers(arenaNode.getNode("minPl").getInt());
 					arena.getOptions().setMaxPlayers(arenaNode.getNode("maxPl").getInt());
-					arena.getOptions().setLobbyCountdownTime(arenaNode.getNode("lobbyCtdnTime").getInt());
 					arena.getOptions().setDedicatedServer(arenaNode.getNode("dedicated").getBoolean());
-					arena.getOptions().setDefaultPlayerEventActions(arenaNode.getNode("dfltPlEvActions").getBoolean());
-					arena.getOptions().setDefaultStateChangeActions(arenaNode.getNode("dfltStChActions").getBoolean());
-					arena.getOptions().setEndGameDelay(arenaNode.getNode("endGameDelay").getBoolean());
-					arena.getOptions().setEndGameSpectator(arenaNode.getNode("endGameSpec").getBoolean());
 					arena.getOptions().setTriggerPlayerEvents(arenaNode.getNode("triggerPlEvents").getBoolean());
 					if(arenaNode.getNode("lobbySpawn")!=null) {
 						Optional<Location<World>> oLoc = loadLoc(arenaNode.getNode("lobbySpawn"));

@@ -16,13 +16,8 @@ public class ArenaOptions {
 	private boolean dedicatedServer = true;
 	private int minPlayers = 2;
 	private int maxPlayers = 8;
-	private int lobbyCountdownTime = 30;
 	private String name = "";
-	private boolean endGameDelay = true;
-	private boolean endGameSpectator = true;
 	private boolean triggerPlayerEvents = true;
-	private boolean defaultStateChangeActions = true;
-	private boolean defaultPlayerEventActions = true;
 	private boolean modifyLobbyBlocks = false;
 	private boolean allowLobbyDamage = false;
 	
@@ -90,76 +85,12 @@ public class ArenaOptions {
 	}
 
 	/**
-	 * Gets the amount of time the lobby will countdown when
-	 * the minimum player requirements have been met
-	 * @return
-	 * 	The lobby countdown time
-	 */
-	public int getLobbyCountdownTime() {
-		return lobbyCountdownTime;
-	}
-
-	/**
-	 * Sets the amount of time the lobby will countdown when
-	 * the minimum player requirements have been met
-	 * @param lobbyCountdownTime
-	 * 	The lobby countdown time to set
-	 */
-	public void setLobbyCountdownTime(int lobbyCountdownTime) {
-		this.lobbyCountdownTime = lobbyCountdownTime;
-	}
-
-	/**
 	 * Gets the name of the arena
 	 * @return
 	 * 	The name of the arena
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Checks if the game will wait 5 seconds after the game ends before 
-	 * teleporting/kicking
-	 * @return
-	 * 	If the game will wait 5 seconds after the game ends before 
-	 * teleporting/kicking
-	 */
-	public boolean isEndGameDelay() {
-		return endGameDelay;
-	}
-
-	/**
-	 * Sets if the game will wait 5 seconds after the game ends before 
-	 * teleporting/kicking
-	 * @param endGameDelay
-	 * 	If the game will wait 5 seconds after the game ends before 
-	 * teleporting/kicking
-	 */
-	public void setEndGameDelay(boolean endGameDelay) {
-		this.endGameDelay = endGameDelay;
-	}
-
-	/**
-	 * Checks if the game will set players to spectator mode while
-	 * waiting 5 seconds after the game ends
-	 * @return
-	 *  If the game will set players to spectator mode while waiting 5 seconds 
-	 *  after the game ends
-	 */
-	public boolean isEndGameSpectator() {
-		return endGameSpectator;
-	}
-
-	/**
-	 * Sets if the game will set players to spectator mode while
-	 * waiting 5 seconds after the game ends
-	 * @param endGameSpectator
-	 * 	If the game will set players to spectator mode while waiting 5 seconds 
-	 * after the game ends
-	 */
-	public void setEndGameSpectator(boolean endGameSpectator) {
-		this.endGameSpectator = endGameSpectator;
 	}
 
 	/**
@@ -182,42 +113,6 @@ public class ArenaOptions {
 	 */
 	public void setTriggerPlayerEvents(boolean triggerPlayerEvents) {
 		this.triggerPlayerEvents = triggerPlayerEvents;
-	}
-
-	/**
-	 * Checks if MinigameCore will run default state change actions
-	 * @return
-	 * 	If MinigameCore will run default state change actions
-	 */
-	public boolean isDefaultStateChangeActions() {
-		return defaultStateChangeActions;
-	}
-
-	/**
-	 * Sets if MinigameCore will run default state change actions
-	 * @param defaultStateChangeActions
-	 * 	If MinigameCore will run default state change actions
-	 */
-	public void setDefaultStateChangeActions(boolean defaultStateChangeActions) {
-		this.defaultStateChangeActions = defaultStateChangeActions;
-	}
-
-	/**
-	 * Checks if MinigameCore will run default player event actions
-	 * @return
-	 * 	If MinigameCore will run default player event actions
-	 */
-	public boolean isDefaultPlayerEventActions() {
-		return defaultPlayerEventActions;
-	}
-
-	/**
-	 * Sets if MinigameCore will run default player event actions
-	 * @param defaultPlayerEventActions
-	 * 	If MinigameCore will run default player event actions
-	 */
-	public void setDefaultPlayerEventActions(boolean defaultPlayerEventActions) {
-		this.defaultPlayerEventActions = defaultPlayerEventActions;
 	}
 
 	/**

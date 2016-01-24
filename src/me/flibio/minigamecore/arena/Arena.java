@@ -11,11 +11,8 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,15 +23,10 @@ public class Arena {
 	private CopyOnWriteArrayList<ArenaState> arenaStates = new CopyOnWriteArrayList<ArenaState>(getDefaultArenaStates());
 	private ConcurrentHashMap<ArenaState,Runnable> runnables = new ConcurrentHashMap<ArenaState,Runnable>();
 	
-	private HashMap<String,Object> customVariables = new HashMap<String,Object>();
-	private HashMap<String,Location<World>> customLocations = new HashMap<String,Location<World>>();
-	private Location<World> lobbySpawnLocation;
-	private Location<World> failedJoinLocation;
-	private ConcurrentHashMap<String, Location<World>> spawnLocations = new ConcurrentHashMap<String, Location<World>>();
 	private CopyOnWriteArrayList<Player> onlinePlayers = new CopyOnWriteArrayList<Player>();
 	private ArenaState arenaState;
 	
-	private ArenaOptions arenaOptions;
+	private ArenaData arenaData;
 	
 	private Game game;
 
@@ -48,7 +40,7 @@ public class Arena {
 	 * 	An instance of the main class of your plugin
 	 */
 	public Arena(String arenaName, Game game, Object plugin) {
-		this.arenaOptions = new ArenaOptions(arenaName);
+		this.arenaData = new ArenaData(arenaName);
 		this.game = game;
 		this.arenaState = ArenaStates.LOBBY_WAITING;
 		
@@ -100,115 +92,24 @@ public class Arena {
 		}
 	}
 	
-	//Spawn Locations
-	
-	/**
-	 * Gets all of the possible spawn locations
-	 * @return
-	 * 	All of the possible spawn locations
-	 */
-	public ConcurrentHashMap<String, Location<World>> getSpawnLocations() {
-		return spawnLocations;
-	}
-	
-	/**
-	 * Adds a spawn location to the list of possible spawn locations
-	 * @param name
-	 * 	The name of the spawn location
-	 * @param location
-	 * 	The location to add
-	 * @return
-	 * 	Boolean based on if the method was successful or not
-	 */
-	public boolean addSpawnLocation(String name, Location<World> location) {
-		if(spawnLocations.containsKey(name)) {
-			return false;
-		}
-		spawnLocations.put(name, location);
-		return true;
-	}
-	
-	/**
-	 * Removes a spawn location from the list of possible spawn locations
-	 * @param name
-	 * 	The name of the spawn location
-	 * @return
-	 * 	Boolean based on if the method was successful or not
-	 */
-	public boolean removeSpawnLocation(String name) {
-		if(!spawnLocations.containsKey(name)) {
-			return false;
-		}
-		spawnLocations.remove(name);
-		return true;
-	}
-	
-	/**
-	 * Gets a spawn location by name
-	 * @param name
-	 * 	The name of the spawn location to get
-	 * @return
-	 * 	Optional of the spawn location
-	 */
-	public Optional<Location<World>> getSpawnLocation(String name) {
-		if(!spawnLocations.containsKey(name)) {
-			return Optional.empty();
-		}
-		return Optional.of(spawnLocations.get(name));
-	}
-	
-	/**
-	 * Selects a random spawn location from the list of available spawn locations
-	 * @return
-	 * 	Optional of the spawn location
-	 */
-	public Optional<Location<World>> randomSpawnLocation() {
-		if(spawnLocations.isEmpty()) {
-			return Optional.empty();
-		}
-		//TODO
-		return Optional.empty();
-	}
-	
-	/**
-	 * Disperses the players among all the spawn locations
-	 */
-	public void dispersePlayers() {
-		//TODO
-	}
-	
 	//Other Arena Properties
 	
 	/**
-	 * Sets the location a player will teleport to if 
-	 * they failed to join the arena (Non-Dedicated Arenas Only)
-	 * @param location
-	 * 	The location to set the failed join location to
+	 * Gets the arena data
+	 * @return
+	 * 	The arena data
 	 */
-	public void setFailedJoinLocation(Location<World> location) {
-		failedJoinLocation = location;
+	public ArenaData getData() {
+		return arenaData;
 	}
 	
 	/**
-	 * Gets the failed join location (Non-Dedicated Arenas Only)
-	 * @return
-	 * 	The failed join location, if present
+	 * Sets the arena data
+	 * @param data
+	 * 	The arena data to set
 	 */
-	public Optional<Location<World>> getFailedJoinLocation() {
-		if(failedJoinLocation==null) {
-			return Optional.empty();
-		} else {
-			return Optional.of(failedJoinLocation);
-		}
-	}
-	
-	/**
-	 * Gets the set of arena options
-	 * @return
-	 * 	The ArenaOptions
-	 */
-	public ArenaOptions getOptions() {
-		return arenaOptions;
+	public void overrideData(ArenaData data) {
+		arenaData = data;
 	}
 	
 	/**
@@ -337,30 +238,8 @@ public class Arena {
 	}
 	
 	/**
-	 * Sets the lobby spawn location of the arena
-	 * @param location
-	 * 	The lobby spawn location of the arena
-	 */
-	public void setLobbySpawnLocation(Location<World> location) {
-		lobbySpawnLocation = location;
-	}
-	
-	/**
-	 * Gets the lobby spawn location of the arena
-	 * @return
-	 * 	The lobby spawn location, if present
-	 */
-	public Optional<Location<World>> getLobbySpawnLocation() {
-		if(lobbySpawnLocation==null) {
-			return Optional.empty();
-		} else {
-			return Optional.of(lobbySpawnLocation);
-		}
-	}
-	
-	/**
-	 * Deserializes XML formatted text. Used with the text in the
-	 * {@link ArenaOptions} class.
+	 * Deserializes XML formatted text. Example:
+	 * <c n="red">Something went wrong!</c>
 	 * @param text
 	 * 	The text to deserialize
 	 * @return
@@ -371,8 +250,8 @@ public class Arena {
 	}
 	
 	/**
-	 * Deserializes XML formatted text. Used with the text in the
-	 * {@link ArenaOptions} class.
+	 * Deserializes XML formatted text. Example:
+	 * <c n="green">%name% has joined the game!</c>
 	 * @param text
 	 * 	The text to deserialize
 	 * @param old
@@ -386,130 +265,12 @@ public class Arena {
 		text.replaceAll(old, replacement);
 		return TextSerializers.TEXT_XML.deserialize(text);
 	}
-	
-	//Custom Variables
-	
-	/**
-	 * Sets a custom variable. Saved with the arena data.
-	 * @param key
-	 * 	The key used to retrieve the value
-	 * @param value
-	 * 	The value to be saved
-	 */
-	public void setVariable(String key, String value) {
-		customVariables.put(key, value);
-	}
-	
-	/**
-	 * Sets a custom variable. Saved with the arena data.
-	 * @param key
-	 * 	The key used to retrieve the value
-	 * @param value
-	 * 	The value to be saved
-	 */
-	public void setVariable(String key, int value) {
-		customVariables.put(key, value);
-	}
-	
-	/**
-	 * Sets a custom variable. Saved with the arena data.
-	 * @param key
-	 * 	The key used to retrieve the value
-	 * @param value
-	 * 	The value to be saved
-	 */
-	public void setVariable(String key, boolean value) {
-		customVariables.put(key, value);
-	}
-	
-	/**
-	 * Sets a custom variable. Saved with the arena data.
-	 * @param key
-	 * 	The key used to retrieve the value
-	 * @param value
-	 * 	The value to be saved
-	 */
-	public void setVariable(String key, double value) {
-		customVariables.put(key, value);
-	}
-	
-	/**
-	 * Sets a custom variable. Saved with the arena data.
-	 * @param key
-	 * 	The key used to retrieve the value
-	 * @param value
-	 * 	The value to be saved
-	 */
-	public void setVariable(String key, float value) {
-		customVariables.put(key, value);
-	}
-	
-	/**
-	 * Retrieves a value using the specified key
-	 * @param key
-	 * 	The key to use to retrieve the value
-	 * @return
-	 * 	The value, if found
-	 */
-	public Optional<Object> getVariable(String key) {
-		if(customVariables.containsKey(key)) {
-			return Optional.of(customVariables.get(key));
-		} else {
-			return Optional.empty();
-		}
-	}
-	
-	/**
-	 * Gets all of the custom variables stored with the arena
-	 * @return
-	 * 	A HashMap of all of the custom variables
-	 */
-	public HashMap<String,Object> getCustomVariables() {
-		final HashMap<String,Object> toReturn = this.customVariables;
-		return toReturn;
-	}
-	
-	/**
-	 * Sets a custom location. Saved with the arena data.
-	 * @param key
-	 * 	The key used to retrieve the location
-	 * @param location
-	 * 	The location to be saved
-	 */
-	public void setLocation(String key, Location<World> location) {
-		customLocations.put(key, location);
-	}
-	
-	/**
-	 * Gets a location using the specified key
-	 * @param key
-	 * 	The key of the location to get
-	 * @return
-	 * 	The location, if found
-	 */
-	public Optional<Location<World>> getLocation(String key) {
-		if(customLocations.containsKey(key)) {
-			return Optional.of(customLocations.get(key));
-		} else {
-			return Optional.empty();
-		}
-	}
-	
-	/**
-	 * Gets all of the custom locations stored with the arena
-	 * @return
-	 * 	A HashMap of all of the custom locations
-	 */
-	public HashMap<String,Location<World>> getCustomLocations() {
-		final HashMap<String,Location<World>> toReturn = this.customLocations;
-		return toReturn;
-	}
 
 	//Listeners
 	
 	@Listener
 	public void onPlayerDisconnect(ClientConnectionEvent.Disconnect event) {
-		if(arenaOptions.isDedicatedServer()&&arenaOptions.isTriggerPlayerEvents()) {
+		if(arenaData.isTriggerPlayerEvents()) {
 			Player player = event.getTargetEntity();
 			removeOnlinePlayer(player);
 			event.setChannel(MessageChannel.TO_NONE);
@@ -518,7 +279,7 @@ public class Arena {
 	
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event) {
-		if(arenaOptions.isDedicatedServer()&&arenaOptions.isTriggerPlayerEvents()) {
+		if(arenaData.isTriggerPlayerEvents()) {
 			Player player = event.getTargetEntity();
 			addOnlinePlayer(player);
 			event.setChannel(MessageChannel.TO_NONE);
@@ -529,7 +290,7 @@ public class Arena {
 	public void onBlockModify(ChangeBlockEvent event) {
 		Optional<Player> playerOptional = event.getCause().first(Player.class);
 		if(!playerOptional.isPresent()) return;
-		if(!arenaOptions.isModifyLobbyBlocks()) {
+		if(!arenaData.isModifyLobbyBlocks()) {
 			if(arenaState.equals(ArenaStates.COUNTDOWN_CANCELLED)||arenaState.equals(ArenaStates.LOBBY_COUNTDOWN)||
 					arenaState.equals(ArenaStates.LOBBY_WAITING)) {
 				event.setCancelled(true);
@@ -541,7 +302,7 @@ public class Arena {
 	public void onPlayerDamage(DamageEntityEvent event) {
 		Optional<Player> playerOptional = event.getCause().first(Player.class);
 		if(event.getTargetEntity() instanceof Player||playerOptional.isPresent()) {
-			if(!arenaOptions.isAllowLobbyDamage()) {
+			if(!arenaData.isAllowLobbyDamage()) {
 				if(arenaState.equals(ArenaStates.COUNTDOWN_CANCELLED)||arenaState.equals(ArenaStates.LOBBY_COUNTDOWN)||
 						arenaState.equals(ArenaStates.LOBBY_WAITING)) {
 					event.setCancelled(true);

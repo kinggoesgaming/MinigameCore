@@ -1,8 +1,7 @@
 package me.flibio.minigamecore.file;
 
 import me.flibio.minigamecore.arena.Arena;
-import me.flibio.minigamecore.arena.ArenaOptions;
-import me.flibio.minigamecore.main.MinigameCore;
+import me.flibio.minigamecore.arena.ArenaData;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -209,28 +208,18 @@ public class FileManager {
 		Optional<ConfigurationNode> fopt = getFile(fileName);
 		if(fopt.isPresent()) {
 			ConfigurationNode file = fopt.get();
-			ArenaOptions options = arena.getOptions();
-			String arenaName = options.getName();
+			ArenaData data = arena.getData();
+			String arenaName = data.getName();
 			ConfigurationNode arenaNode = file.getNode(arenaName);
 			file.setValue(null);
-			arenaNode.getNode("minPl").setValue(options.getMinPlayers());
-			arenaNode.getNode("maxPl").setValue(options.getMaxPlayers());
-			arenaNode.getNode("dedicated").setValue(options.isDedicatedServer());
-			arenaNode.getNode("triggerPlEvents").setValue(options.isTriggerPlayerEvents());
-			if(arena.getLobbySpawnLocation().isPresent()) {
-				saveLoc(arenaNode.getNode("lobbySpawn"),arena.getLobbySpawnLocation().get());
+			arenaNode.getNode("triggerPlEvents").setValue(data.isTriggerPlayerEvents());
+			arenaNode.getNode("allowLobbyDmg").setValue(data.isAllowLobbyDamage());
+			arenaNode.getNode("modifyLobbyBlocks").setValue(data.isModifyLobbyBlocks());
+			for(String key : data.getCustomLocations().keySet()) {
+				saveLoc(arenaNode.getNode("customLoc").getNode(key),data.getCustomLocations().get(key));
 			}
-			if(arena.getFailedJoinLocation().isPresent()) {
-				saveLoc(arenaNode.getNode("failedJoin"),arena.getFailedJoinLocation().get());
-			}
-			for(String spawn : arena.getSpawnLocations().keySet()) {
-				saveLoc(arenaNode.getNode("spawns").getNode(spawn),arena.getSpawnLocations().get(spawn));
-			}
-			for(String key : arena.getCustomLocations().keySet()) {
-				saveLoc(arenaNode.getNode("customLoc").getNode(key),arena.getCustomLocations().get(key));
-			}
-			for(String key : arena.getCustomVariables().keySet()) {
-				arenaNode.getNode("custom").getNode(key).setValue(arena.getCustomVariables().get(key));
+			for(String key : data.getCustomVariables().keySet()) {
+				arenaNode.getNode("custom").getNode(key).setValue(data.getCustomVariables().get(key));
 			}
 			return saveFile(fileName,file);
 		} else {
@@ -245,48 +234,35 @@ public class FileManager {
 	 * @return
 	 * 	All arenas found in the file
 	 */
-	public ArrayList<Arena> loadArenas(String fileName) {
+	public ArrayList<ArenaData> loadArenas(String fileName) {
 		initializeFile(fileName);
 		Optional<ConfigurationNode> fopt = getFile(fileName);
-		ArrayList<Arena> arenas = new ArrayList<Arena>();
+		ArrayList<ArenaData> arenaDatas = new ArrayList<ArenaData>();
 		if(fopt.isPresent()) {
 			ConfigurationNode file = fopt.get();
 			for(String child : getChildren(file)) {
 				ConfigurationNode arenaNode = file.getNode(child);
-				Arena arena = new Arena(child,game,MinigameCore.access);
+				ArenaData arenaData = new ArenaData(child);
 				//Load all the saved value stored with the arena
 				try {
-					arena.getOptions().setMinPlayers(arenaNode.getNode("minPl").getInt());
-					arena.getOptions().setMaxPlayers(arenaNode.getNode("maxPl").getInt());
-					arena.getOptions().setDedicatedServer(arenaNode.getNode("dedicated").getBoolean());
-					arena.getOptions().setTriggerPlayerEvents(arenaNode.getNode("triggerPlEvents").getBoolean());
-					if(arenaNode.getNode("lobbySpawn")!=null) {
-						Optional<Location<World>> oLoc = loadLoc(arenaNode.getNode("lobbySpawn"));
-						if(oLoc.isPresent()) {
-							arena.setLobbySpawnLocation(oLoc.get());
-						}
-					}
-					if(arenaNode.getNode("failedJoin")!=null) {
-						Optional<Location<World>> oLoc = loadLoc(arenaNode.getNode("failedJoin"));
-						if(oLoc.isPresent()) {
-							arena.setFailedJoinLocation(oLoc.get());
-						}
-					}
+					arenaData.setTriggerPlayerEvents(arenaNode.getNode("triggerPlEvents").getBoolean());
+					arenaData.setAllowLobbyDamage(arenaNode.getNode("allowLobbyDmg").getBoolean());
+					arenaData.setModifyLobbyBlocks(arenaNode.getNode("modifyLobbyBlocks").getBoolean());
 					//Check for custom variables
 					if(arenaNode.getNode("custom")!=null) {
 						for(String customVar : getChildren(arenaNode.getNode("custom"))) {
 							ConfigurationNode customNode = arenaNode.getNode("custom");
 							Object rawVal = customNode.getNode(customVar).getValue();
 							if(rawVal instanceof String) {
-								arena.setVariable(customVar, (String) rawVal);
+								arenaData.setVariable(customVar, (String) rawVal);
 							} else if(rawVal instanceof Integer) {
-								arena.setVariable(customVar, (int) rawVal);
+								arenaData.setVariable(customVar, (int) rawVal);
 							} else if(rawVal instanceof Boolean) {
-								arena.setVariable(customVar, (boolean) rawVal);
+								arenaData.setVariable(customVar, (boolean) rawVal);
 							} else if(rawVal instanceof Double) {
-								arena.setVariable(customVar, (double) rawVal);
+								arenaData.setVariable(customVar, (double) rawVal);
 							} else if(rawVal instanceof Float) {
-								arena.setVariable(customVar, (float) rawVal);
+								arenaData.setVariable(customVar, (float) rawVal);
 							}
 						}
 					}
@@ -295,26 +271,17 @@ public class FileManager {
 						for(String locName : getChildren(arenaNode.getNode("customLoc"))) {
 							Optional<Location<World>> oLoc = loadLoc(arenaNode.getNode("customLoc").getNode(locName));
 							if(oLoc.isPresent()) {
-								arena.setLocation(locName, oLoc.get());
+								arenaData.setLocation(locName, oLoc.get());
 							}
 						}
 					}
-					//Check for spawn locations
-					if(arenaNode.getNode("spawns")!=null) {
-						for(String locName : getChildren(arenaNode.getNode("spawns"))) {
-							Optional<Location<World>> oLoc = loadLoc(arenaNode.getNode("spawns").getNode(locName));
-							if(oLoc.isPresent()) {
-								arena.addSpawnLocation(locName, oLoc.get());
-							}
-						}
-					}
-					arenas.add(arena);
+					arenaDatas.add(arenaData);
 				} catch(Exception e) {
 					logger.error("Corrupt arena data for arena "+child+"!");
 				}
 			}
 		}
-		return arenas;
+		return arenaDatas;
 	}
 	
 	private void saveLoc(ConfigurationNode node,Location<World> loc) {

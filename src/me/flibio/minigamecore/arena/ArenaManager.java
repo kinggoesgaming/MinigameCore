@@ -22,7 +22,7 @@ public class ArenaManager {
 	 * 	If the arena was successfully added or not
 	 */
 	public boolean addArena(Arena arena) {
-		if(arenaExists(arena.getOptions().getName())) {
+		if(arenaExists(arena.getData().getName())) {
 			return false;
 		}
 		arenas.add(arena);
@@ -38,7 +38,7 @@ public class ArenaManager {
 	 */
 	public boolean removeArena(String name) {
 		for(Arena arena : arenas) {
-			if(arena.getOptions().getName().equalsIgnoreCase(name)) {
+			if(arena.getData().getName().equalsIgnoreCase(name)) {
 				arenas.remove(arena);
 				return true;
 			}
@@ -55,7 +55,7 @@ public class ArenaManager {
 	 */
 	public Optional<Arena> getArena(String name) {
 		for(Arena arena : arenas) {
-			if(arena.getOptions().getName().equalsIgnoreCase(name)) {
+			if(arena.getData().getName().equalsIgnoreCase(name)) {
 				return Optional.of(arena);
 			}
 		}
@@ -71,7 +71,7 @@ public class ArenaManager {
 	 */
 	public boolean arenaExists(String name) {
 		for(Arena arena : arenas) {
-			if(arena.getOptions().getName().equalsIgnoreCase(name)) {
+			if(arena.getData().getName().equalsIgnoreCase(name)) {
 				return true;
 			}
 		}

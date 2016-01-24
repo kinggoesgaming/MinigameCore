@@ -9,7 +9,6 @@ import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -25,7 +24,7 @@ public class LeaderboardScoreboard extends MinigameCoreScoreboard {
 	
 	public LeaderboardScoreboard(String name, Game game) {
 		super(ScoreboardType.LEADERBOARD, name);
-		displayName = Texts.of(name);
+		displayName = Text.of(name);
 		
 		scoreboard = game.getRegistry().createBuilder(Scoreboard.Builder.class).build();
 		obj = game.getRegistry().createBuilder(Objective.Builder.class).name(name).criterion(Criteria.DUMMY).displayName(displayName).build();
@@ -139,7 +138,7 @@ public class LeaderboardScoreboard extends MinigameCoreScoreboard {
 	public void displayToPlayer(Player player) {
 		obj.setDisplayName(displayName);
 		for(String leader : leaders.keySet()) {
-			obj.getOrCreateScore(Texts.of(nameColor, leader)).setScore(leaders.get(leader));
+			obj.getOrCreateScore(Text.of(nameColor, leader)).setScore(leaders.get(leader));
 		}
 		scoreboard.updateDisplaySlot(obj, DisplaySlots.SIDEBAR);
 		player.setScoreboard(scoreboard);

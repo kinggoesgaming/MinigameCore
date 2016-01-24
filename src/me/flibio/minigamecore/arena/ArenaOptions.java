@@ -1,21 +1,17 @@
 package me.flibio.minigamecore.arena;
 
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.TextColors;
-
 public class ArenaOptions {
 	
-	//Text Customization Options
-	public Text gameInProgress = Texts.of(TextColors.RED,"The game is currently in progress!");
-	public Text lobbyFull = Texts.of(TextColors.RED,"The lobby is full!");
-	public Text playerJoined = Texts.of(TextColors.YELLOW,"%name%",TextColors.GRAY," has joined the game!");
-	public Text playerQuit = Texts.of(TextColors.YELLOW,"%name%",TextColors.GRAY," has left the game!");
-	public Text lobbyCountdownStarted = Texts.of(TextColors.YELLOW,"%time%",TextColors.GRAY," until the game begins!");
-	public Text lobbyCountdownCancelled = Texts.builder("Countdown cancelled!").color(TextColors.RED).build();
-	public Text lobbyCountdownProgress = Texts.of(TextColors.YELLOW,"%time%",TextColors.GRAY," until the game begins!");
-	public Text gameStarting = Texts.of(TextColors.GREEN,"The game is starting in ",TextColors.YELLOW,"%time%",TextColors.GREEN," seconds!");
-	public Text gameOver = Texts.of(TextColors.GREEN,"The game is over!");
+	//Text Customization Options - Supports XML formatting
+	public String gameInProgress = "<c n=\"red\">The game is currently in progress!</c>";
+	public String lobbyFull = "<c n=\"red\">The lobby is full!</c>";
+	public String playerJoined = "<c n=\"yellow\">%name%</c><c n=\"gray\"> has joined the game!</c>";
+	public String playerQuit = "<c n=\"yellow\">%name%</c><c n=\"gray\"> has left the game!</c>";
+	public String lobbyCountdownStarted = "<c n=\"yellow\">%time%</c><c n=\"gray\"> until the game begins!</c>";
+	public String lobbyCountdownCancelled = "<c n=\"red\">Countdown cancelled!</c>";
+	public String lobbyCountdownProgress = "<c n=\"yellow\">%time%</c><c n=\"gray\"> until the game begins!</c>";
+	public String gameStarting = "<c n=\"green\">The game is starting in </c><c n=\"yellow\">%time%</c><c n=\"green\"> seconds!</c>";
+	public String gameOver = "<c n=\"green\">The game is over!</c>";
 	
 	private boolean dedicatedServer = true;
 	private int minPlayers = 2;
@@ -27,6 +23,8 @@ public class ArenaOptions {
 	private boolean triggerPlayerEvents = true;
 	private boolean defaultStateChangeActions = true;
 	private boolean defaultPlayerEventActions = true;
+	private boolean modifyLobbyBlocks = false;
+	private boolean allowLobbyDamage = false;
 	
 	/**
 	 * Stores configurable options for the arena
@@ -220,6 +218,44 @@ public class ArenaOptions {
 	 */
 	public void setDefaultPlayerEventActions(boolean defaultPlayerEventActions) {
 		this.defaultPlayerEventActions = defaultPlayerEventActions;
+	}
+
+	/**
+	 * Checks if MinigameCore will block players from modifying blocks in the 
+	 * lobby.
+	 * @return
+	 * 	If MinigameCore will block players from modifying blocks in the lobby
+	 */
+	public boolean isModifyLobbyBlocks() {
+		return modifyLobbyBlocks;
+	}
+
+	/**
+	 * Sets if MinigameCore will block players from modifying blocks in the 
+	 * lobby.
+	 * @param defaultPlayerEventActions
+	 * 	If MinigameCore will block players from modifying blocks in the lobby
+	 */
+	public void setModifyLobbyBlocks(boolean modifyLobbyBlocks) {
+		this.modifyLobbyBlocks = modifyLobbyBlocks;
+	}
+
+	/**
+	 * Checks if MinigameCore will allow players to take damage in the lobby
+	 * @return
+	 * 	If MinigameCore will allow players to take damage in the lobby
+	 */
+	public boolean isAllowLobbyDamage() {
+		return allowLobbyDamage;
+	}
+
+	/**
+	 * Sets if MinigameCore will allow players to take damage in the lobby
+	 * @param allowLobbyDamage
+	 * 	If MinigameCore will allow players to take damage in the lobby
+	 */
+	public void setAllowLobbyDamage(boolean allowLobbyDamage) {
+		this.allowLobbyDamage = allowLobbyDamage;
 	}
 	
 }

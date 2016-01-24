@@ -9,7 +9,6 @@ import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +21,7 @@ public class InfoScoreboard extends MinigameCoreScoreboard {
 	
 	public InfoScoreboard(String name, Game game) {
 		super(ScoreboardType.INFO, name);
-		displayName = Texts.of(name);
+		displayName = Text.of(name);
 		
 		scoreboard = game.getRegistry().createBuilder(Scoreboard.Builder.class).build();
 		obj = game.getRegistry().createBuilder(Objective.Builder.class).name(name).criterion(Criteria.DUMMY).displayName(displayName).build();

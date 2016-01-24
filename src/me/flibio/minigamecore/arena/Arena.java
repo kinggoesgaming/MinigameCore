@@ -7,9 +7,13 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.text.sink.MessageSinks;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -73,22 +77,22 @@ public class Arena {
 					//Lobby is full
 					if(arenaOptions.isDedicatedServer()) {
 						//Kick the player
-						player.kick(arenaOptions.lobbyFull);
+						player.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyFull));
 					} else {
 						//Try to teleport the player to the failed join location
 						if(failedJoinLocation!=null) {
-							player.sendMessage(arenaOptions.lobbyFull);
+							player.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyFull));
 							player.setLocation(failedJoinLocation);
 						} else {
-							player.kick(arenaOptions.lobbyFull);
+							player.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyFull));
 						}
 					}
 				} else {
 					//Player can join
 					onlinePlayers.add(player);
+					Text msg = TextSerializers.TEXT_XML.deserialize(arenaOptions.playerJoined.replaceAll("%name%", player.getName()));
 					for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-						//TODO - replace %name% with the player name
-						onlinePlayer.sendMessage(arenaOptions.playerJoined);
+						onlinePlayer.sendMessage(msg);
 					}
 					if(lobbySpawnLocation!=null) {
 						player.setLocation(lobbySpawnLocation);
@@ -100,14 +104,14 @@ public class Arena {
 			} else {
 				if(arenaOptions.isDedicatedServer()) {
 					//Kick the player
-					player.kick(arenaOptions.gameInProgress);
+					player.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameInProgress));
 				} else {
 					//Try to teleport the player to the failed join location
 					if(failedJoinLocation!=null) {
-						player.sendMessage(arenaOptions.gameInProgress);
+						player.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameInProgress));
 						player.setLocation(failedJoinLocation);
 					} else {
-						player.kick(arenaOptions.gameInProgress);
+						player.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameInProgress));
 					}
 				}
 			}
@@ -127,9 +131,9 @@ public class Arena {
 			if(arenaState.equals(ArenaStates.LOBBY_COUNTDOWN)&&onlinePlayers.size()<arenaOptions.getMinPlayers()) {
 				arenaStateChange(ArenaStates.COUNTDOWN_CANCELLED);
 			}
+			Text msg = TextSerializers.TEXT_XML.deserialize(arenaOptions.playerQuit.replaceAll("%name%", player.getName()));
 			for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-				//TODO - replace %name% with the player name
-				onlinePlayer.sendMessage(arenaOptions.playerQuit);
+				onlinePlayer.sendMessage(msg);
 			}
 		}
 	}
@@ -163,9 +167,9 @@ public class Arena {
 		if(arenaOptions.isDefaultStateChangeActions()) {
 			if(arenaState.equals(ArenaStates.LOBBY_COUNTDOWN)) {
 				currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
+				Text msg = TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyCountdownStarted.replaceAll("%time%",""+currentLobbyCountdown));
 				for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-					//TODO - replace %time% with the seconds to go
-					onlinePlayer.sendMessage(arenaOptions.lobbyCountdownStarted);
+					onlinePlayer.sendMessage(msg);
 				}
 				//Register task the run the countdown every 1 second
 				lobbyCountdownTask = game.getScheduler().createTaskBuilder().execute(new Runnable() {
@@ -179,9 +183,10 @@ public class Arena {
 						if(arenaOptions.getLobbyCountdownTime()/2==currentLobbyCountdown||
 								currentLobbyCountdown<=10) {
 							//Send a message
+							Text msg = TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyCountdownProgress
+									.replaceAll("%time%",""+currentLobbyCountdown));
 							for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-								//TODO - replace %time% with the seconds to go
-								onlinePlayer.sendMessage(arenaOptions.lobbyCountdownProgress);
+								onlinePlayer.sendMessage(msg);
 							}
 						}
 						currentLobbyCountdown--;
@@ -194,7 +199,7 @@ public class Arena {
 				}
 				arenaState = ArenaStates.LOBBY_WAITING;
 				for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-					onlinePlayer.sendMessage(arenaOptions.lobbyCountdownCancelled);
+					onlinePlayer.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.lobbyCountdownCancelled));
 				}
 			} else if(arenaState.equals(ArenaStates.GAME_COUNTDOWN)) {
 				currentLobbyCountdown = arenaOptions.getLobbyCountdownTime();
@@ -202,7 +207,7 @@ public class Arena {
 				arenaStateChange(ArenaStates.GAME_PLAYING);
 			} else if(arenaState.equals(ArenaStates.GAME_OVER)) {
 				for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-					onlinePlayer.sendMessage(arenaOptions.gameOver);
+					onlinePlayer.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameOver));
 					//End game spectator only works with end game delay on
 					if(arenaOptions.isEndGameDelay()&&arenaOptions.isEndGameSpectator()) {
 						//TODO - Save the gamemode
@@ -214,13 +219,13 @@ public class Arena {
 						@Override
 						public void run() {
 							for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-								onlinePlayer.sendMessage(arenaOptions.gameOver);
+								onlinePlayer.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameOver));
 								if(arenaOptions.isEndGameSpectator()) {
 									//TODO load the gamemode
 									onlinePlayer.offer(Keys.GAME_MODE,GameModes.SURVIVAL);
 								}
 								if(arenaOptions.isDedicatedServer()) {
-									onlinePlayer.kick(arenaOptions.gameOver);
+									onlinePlayer.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameOver));
 								} else {
 									if(lobbySpawnLocation!=null) {
 										onlinePlayer.setLocation(lobbySpawnLocation);
@@ -232,13 +237,13 @@ public class Arena {
 				} else {
 					//No delay
 					for(Player onlinePlayer : game.getServer().getOnlinePlayers()) {
-						onlinePlayer.sendMessage(arenaOptions.gameOver);
+						onlinePlayer.sendMessage(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameOver));
 						if(arenaOptions.isEndGameSpectator()) {
 							//TODO load the gamemode
 							onlinePlayer.offer(Keys.GAME_MODE,GameModes.SURVIVAL);
 						}
 						if(arenaOptions.isDedicatedServer()) {
-							onlinePlayer.kick(arenaOptions.gameOver);
+							onlinePlayer.kick(TextSerializers.TEXT_XML.deserialize(arenaOptions.gameOver));
 						} else {
 							if(lobbySpawnLocation!=null) {
 								onlinePlayer.setLocation(lobbySpawnLocation);
@@ -633,7 +638,7 @@ public class Arena {
 		if(arenaOptions.isDedicatedServer()&&arenaOptions.isTriggerPlayerEvents()) {
 			Player player = event.getTargetEntity();
 			removeOnlinePlayer(player);
-			event.setSink(MessageSinks.toNone());
+			event.setChannel(MessageChannel.TO_NONE);
 		}
 	}
 	
@@ -642,7 +647,32 @@ public class Arena {
 		if(arenaOptions.isDedicatedServer()&&arenaOptions.isTriggerPlayerEvents()) {
 			Player player = event.getTargetEntity();
 			addOnlinePlayer(player);
-			event.setSink(MessageSinks.toNone());
+			event.setChannel(MessageChannel.TO_NONE);
+		}
+	}
+	
+	@Listener
+	public void onBlockModify(ChangeBlockEvent event) {
+		Optional<Player> playerOptional = event.getCause().first(Player.class);
+		if(!playerOptional.isPresent()) return;
+		if(!arenaOptions.isModifyLobbyBlocks()) {
+			if(arenaState.equals(ArenaStates.COUNTDOWN_CANCELLED)||arenaState.equals(ArenaStates.LOBBY_COUNTDOWN)||
+					arenaState.equals(ArenaStates.LOBBY_WAITING)) {
+				event.setCancelled(true);
+			}
+		}
+	}
+	
+	@Listener
+	public void onPlayerDamage(DamageEntityEvent event) {
+		Optional<Player> playerOptional = event.getCause().first(Player.class);
+		if(event.getTargetEntity() instanceof Player||playerOptional.isPresent()) {
+			if(!arenaOptions.isAllowLobbyDamage()) {
+				if(arenaState.equals(ArenaStates.COUNTDOWN_CANCELLED)||arenaState.equals(ArenaStates.LOBBY_COUNTDOWN)||
+						arenaState.equals(ArenaStates.LOBBY_WAITING)) {
+					event.setCancelled(true);
+				}
+			}
 		}
 	}
 }

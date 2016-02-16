@@ -29,7 +29,8 @@ package me.flibio.minigamecore;
  */
 public class PluginInfo {
 
-    private PluginInfo() {}
+    private PluginInfo() {
+    }
 
     public static final String ID = "MinigameCore";
     public static final String NAME = "MinigameCore";

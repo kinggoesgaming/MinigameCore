@@ -1,4 +1,4 @@
-# MinigameCore [![Build Status](https://travis-ci.org/MinigameCore/MinigameCore.svg?branch=master)](https://travis-ci.org/MinigameCore/MinigameCore)
+# MinigameCore [![Downloads](https://img.shields.io/github/downloads/MinigameCore/MinigameCore/total.svg?style=flat-square)](https://github.com/MinigameCore/MinigameCore/releases) [![Issues](https://img.shields.io/github/issues/MinigameCore/MinigameCore.svg?style=flat-square)](http://www.github.com/MinigameCore/MinigameCore/issues/) [![Gitter](https://img.shields.io/badge/chat-on_gitter-3F51B5.svg?style=flat-square)](https://gitter.im/MinigameCore/MinigameCore) [![JitPack](https://img.shields.io/badge/dependency-jitpack-4CAF50.svg?style=flat-square)](https://jitpack.io/#MinigameCore/MinigameCore)
 
 MinigameCore is a Sponge plugin that provides a core set of functions for a minigame to function. This significantly decreases the time needed to create a minigame.
 

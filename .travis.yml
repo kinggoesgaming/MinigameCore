@@ -11,7 +11,7 @@ script:
 after_success:
 - 'if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then exit; fi'
 - 'if [ ${TRAVIS_BRANCH} != "master" ]; then exit; fi'
-- 'CURRENT_TAG=$(phantomjs gettag.js)'
-- 'BUILD_NUMBER=$((CURRENT_TAG+1))'
+- 'BUILD_NUMBER=$(phantomjs buildnumber.js ${IS_UNSTABLE} ${TARGET_VER})'
 - 'curl -v -X POST -d "{\"tag\": \"${BUILD_NUMBER}\",\"message\": \"MinigameCore Build ${BUILD_NUMBER}\",\"object\": \"${TRAVIS_COMMIT}\",\"type\": \"commit\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/MinigameCore/MinigameCore/git/tags"'
 - 'curl -v -X POST -d "{\"ref\": \"refs/tags/${BUILD_NUMBER}\",\"sha\": \"${TRAVIS_COMMIT}\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/MinigameCore/MinigameCore/git/refs"'
+- 'curl -v -X POST -d "{\"tag_name\": \"${BUILD_NUMBER}\",\"target_commitish\": \"master\",\"name\": \"MinigameCore Build ${BUILD_NUMBER}\",\"prerelease\": ${IS_UNSTABLE}}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/MinigameCore/MinigameCore/releases"'

@@ -22,37 +22,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package me.flibio.minigamecore.arena;
+package io.github.flibio.minigamecore.arena;
 
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Optional;
 
-public class ArenaData {
+public class ArenaData implements Serializable {
 
-    private HashMap<String, Object> customVariables = new HashMap<String, Object>();
-    private HashMap<String, Location<World>> customLocations = new HashMap<String, Location<World>>();
+    private static final long serialVersionUID = 1L;
+    private HashMap<String, Object> customVariables = new HashMap<>();
+    private HashMap<String, Location<World>> locations = new HashMap<>();
 
-    private String name = "";
+    private final String name;
     private boolean triggerPlayerEvents = true;
     private boolean modifyLobbyBlocks = false;
     private boolean allowLobbyDamage = false;
+    private boolean allowHungerLoss = false;
 
     /**
-     * Stores configurable options for the arena
+     * Stores data for the arena.
      * 
-     * @param arenaName The name of the arena
+     * @param arenaName The name of the arena.
      */
     public ArenaData(String arenaName) {
         this.name = arenaName;
     }
 
     /**
-     * Gets the name of the arena
+     * Gets the name of the arena.
      * 
-     * @return The name of the arena
+     * @return The name of the arena.
      */
     public String getName() {
         return name;
@@ -60,10 +63,10 @@ public class ArenaData {
 
     /**
      * Checks if MinigameCore will automatically trigger player join and player
-     * quit methods
+     * quit methods when a player joins or quits the server.
      * 
      * @return If MinigameCore will automatically trigger player join and player
-     *         quit methods
+     *         quit methods when a player joins or quits the server.
      */
     public boolean isTriggerPlayerEvents() {
         return triggerPlayerEvents;
@@ -71,10 +74,11 @@ public class ArenaData {
 
     /**
      * Sets if MinigameCore will automatically trigger player join and player
-     * quit methods
+     * quit methods when a player joins or quits the server.
      * 
      * @param triggerPlayerEvents If MinigameCore will automatically trigger
-     *        player join and player quit methods
+     *        player join and player quit methods when a player joins or quits
+     *        the server.
      */
     public void setTriggerPlayerEvents(boolean triggerPlayerEvents) {
         this.triggerPlayerEvents = triggerPlayerEvents;
@@ -85,7 +89,7 @@ public class ArenaData {
      * lobby.
      * 
      * @return If MinigameCore will block players from modifying blocks in the
-     *         lobby
+     *         lobby.
      */
     public boolean isModifyLobbyBlocks() {
         return modifyLobbyBlocks;
@@ -96,101 +100,94 @@ public class ArenaData {
      * lobby.
      * 
      * @param defaultPlayerEventActions If MinigameCore will block players from
-     *        modifying blocks in the lobby
+     *        modifying blocks in the lobby.
      */
     public void setModifyLobbyBlocks(boolean modifyLobbyBlocks) {
         this.modifyLobbyBlocks = modifyLobbyBlocks;
     }
 
     /**
-     * Checks if MinigameCore will allow players to take damage in the lobby
+     * Checks if MinigameCore will allow players to take damage in the lobby.
      * 
-     * @return If MinigameCore will allow players to take damage in the lobby
+     * @return If MinigameCore will allow players to take damage in the lobby.
      */
     public boolean isAllowLobbyDamage() {
         return allowLobbyDamage;
     }
 
     /**
-     * Sets if MinigameCore will allow players to take damage in the lobby
+     * Sets if MinigameCore will allow players to take damage in the lobby.
      * 
      * @param allowLobbyDamage If MinigameCore will allow players to take damage
-     *        in the lobby
+     *        in the lobby.
      */
     public void setAllowLobbyDamage(boolean allowLobbyDamage) {
         this.allowLobbyDamage = allowLobbyDamage;
     }
 
+    /**
+     * Checks if MinigameCore will allow players to lose hunger.
+     * 
+     * @return If MinigameCore will allow players to lose hunger.
+     */
+    public boolean isAllowHungerLoss() {
+        return allowHungerLoss;
+    }
+
+    /**
+     * Sets if MinigameCore will allow players to lose hunger.
+     * 
+     * @param allowLobbyDamage If MinigameCore will allow players to lose
+     *        hunger.
+     */
+    public void setAllowHungerLoss(boolean allowHungerLoss) {
+        this.allowHungerLoss = allowHungerLoss;
+    }
+
     // Custom Variables
 
     /**
-     * Sets a custom variable. Saved with the arena data.
+     * Set the value of a key. The value must be serializable.
      * 
-     * @param key The key used to retrieve the value
-     * @param value The value to be saved
+     * @param key The key to store with the value.
+     * @param type The type of the value.
+     * @param value The value to store with the key.
+     * @return If the value was successfully set.
      */
-    public void setVariable(String key, String value) {
-        customVariables.put(key, value);
+    public <T> boolean setVariable(String key, Class<T> type, T value) {
+        if (Serializable.class.isAssignableFrom(type)) {
+            customVariables.put(key, value);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
-     * Sets a custom variable. Saved with the arena data.
+     * Gets a variable using a key.
      * 
-     * @param key The key used to retrieve the value
-     * @param value The value to be saved
+     * @param key The key of the variable.
+     * @param type The type of the variable stored.
+     * @return The variable, if it was found.
      */
-    public void setVariable(String key, int value) {
-        customVariables.put(key, value);
-    }
-
-    /**
-     * Sets a custom variable. Saved with the arena data.
-     * 
-     * @param key The key used to retrieve the value
-     * @param value The value to be saved
-     */
-    public void setVariable(String key, boolean value) {
-        customVariables.put(key, value);
-    }
-
-    /**
-     * Sets a custom variable. Saved with the arena data.
-     * 
-     * @param key The key used to retrieve the value
-     * @param value The value to be saved
-     */
-    public void setVariable(String key, double value) {
-        customVariables.put(key, value);
-    }
-
-    /**
-     * Sets a custom variable. Saved with the arena data.
-     * 
-     * @param key The key used to retrieve the value
-     * @param value The value to be saved
-     */
-    public void setVariable(String key, float value) {
-        customVariables.put(key, value);
-    }
-
-    /**
-     * Retrieves a value using the specified key
-     * 
-     * @param key The key to use to retrieve the value
-     * @return The value, if found
-     */
-    public Optional<Object> getVariable(String key) {
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> getVariable(String key, Class<T> type) {
         if (customVariables.containsKey(key)) {
-            return Optional.of(customVariables.get(key));
+            Object raw = customVariables.get(key);
+            if (type.equals(raw.getClass())) {
+                return Optional.of((T) raw);
+            } else {
+                return Optional.empty();
+            }
         } else {
             return Optional.empty();
         }
     }
 
     /**
-     * Gets all of the custom variables stored with the arena
+     * Gets all of the custom variables stored with the arena.
      * 
-     * @return A HashMap of all of the custom variables
+     * @return A HashMap of all of the custom variables.
      */
     public HashMap<String, Object> getCustomVariables() {
         final HashMap<String, Object> toReturn = this.customVariables;
@@ -198,36 +195,36 @@ public class ArenaData {
     }
 
     /**
-     * Sets a custom location. Saved with the arena data.
+     * Assigns a location to a key.
      * 
-     * @param key The key used to retrieve the location
-     * @param location The location to be saved
+     * @param key The key the location will be assigned to.
+     * @param location The location to assign.
      */
     public void setLocation(String key, Location<World> location) {
-        customLocations.put(key, location);
+        locations.put(key, location);
     }
 
     /**
-     * Gets a location using the specified key
+     * Gets a location using the specified key.
      * 
-     * @param key The key of the location to get
-     * @return The location, if found
+     * @param key The key of the location to get.
+     * @return The location, if found.
      */
     public Optional<Location<World>> getLocation(String key) {
-        if (customLocations.containsKey(key)) {
-            return Optional.of(customLocations.get(key));
+        if (locations.containsKey(key)) {
+            return Optional.of(locations.get(key));
         } else {
             return Optional.empty();
         }
     }
 
     /**
-     * Gets all of the custom locations stored with the arena
+     * Gets all of the locations stored with the arena.
      * 
-     * @return A HashMap of all of the custom locations
+     * @return A HashMap of all of the locations.
      */
-    public HashMap<String, Location<World>> getCustomLocations() {
-        final HashMap<String, Location<World>> toReturn = this.customLocations;
+    public HashMap<String, Location<World>> getLocations() {
+        final HashMap<String, Location<World>> toReturn = this.locations;
         return toReturn;
     }
 

@@ -1,58 +1,55 @@
 plugins {
     id 'java'
     id 'eclipse'
-    id 'idea'
     id 'maven'
     id 'com.github.hierynomus.license' version '0.12.1'
-    id 'net.ellune.blossom' version '1.0.1'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
-group 'me.flibio'
-version '1.0.0'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '2.9'
-  distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
+group 'io.github.flibio'
 
-apply plugin: 'net.ellune.blossom'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-defaultTasks 'licenseFormat'
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': project.name,
-                   'Implementation-Version': project.version
-    }
-}
+defaultTasks 'licenseFormat', 'clean', 'build'
 
 repositories {
+    mavenCentral()
     jcenter()
     maven {
         name 'Sponge API repo'
         url 'http://repo.spongepowered.org/maven'
     }
+    maven {
+        url "https://jitpack.io"
+    }
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:3.1.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:4.1.0-SNAPSHOT'
+    compile 'com.github.flibiostudio:utils:1.5.1'
+}
+
+shadowJar {
+    dependencies {
+        include dependency('com.github.flibiostudio:utils')
+    }
+    
+    relocate 'io.github.flibio.utils', 'io.github.flibio.minigamecore.utils'
+}
+
+artifacts {
+    archives shadowJar
 }
 
 license {
-
-    // The project properties to use
     ext.name = project.name
     ext.owner = project.owner
     ext.inceptionYear = project.inceptionYear
     ext.currentYear = project.currentYear
 
-    // The file that contains the license header
     header file('HEADER.txt')
 
-    // The source sets to apply the license to
     sourceSets = project.sourceSets
 
     ignoreFailures false
@@ -63,6 +60,6 @@ license {
     }
 }
 
-blossom {
-    replaceToken '@project.version@', project.version, 'src/main/java/me/flibio/minigamecore/PluginInfo.java'
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.11'
 }

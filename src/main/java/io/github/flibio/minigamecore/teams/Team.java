@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package me.flibio.minigamecore.teams;
+package io.github.flibio.minigamecore.teams;
 
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -39,19 +39,19 @@ public class Team {
     }
 
     /**
-     * Gets the team name
+     * Gets the team name.
      * 
-     * @return The name of the team
+     * @return The name of the team.
      */
     public String getName() {
         return this.name;
     }
 
     /**
-     * Gets a player from the team players
+     * Gets a player from the team players.
      * 
-     * @param name The name of the player to search for
-     * @return The player
+     * @param name The name of the player to search for.
+     * @return The player.
      */
     public Optional<Player> getPlayer(String name) {
         for (Player player : players) {
@@ -63,10 +63,10 @@ public class Team {
     }
 
     /**
-     * Checks if a player is on the team
+     * Checks if a player is on the team.
      * 
-     * @param name The name of the player to check for
-     * @return If the player is on the team or not
+     * @param name The name of the player to check for.
+     * @return If the player is on the team or not.
      */
     public boolean playerExists(String name) {
         for (Player player : players) {
@@ -78,18 +78,18 @@ public class Team {
     }
 
     /**
-     * Adds a player to the team
+     * Adds a player to the team.
      * 
-     * @param player The player to add to the team
+     * @param player The player to add to the team.
      */
     public void addPlayer(Player player) {
         players.add(player);
     }
 
     /**
-     * Removes a player from the team
+     * Removes a player from the team.
      * 
-     * @param name The name of the player to remove from the team
+     * @param name The name of the player to remove from the team.
      */
     public void removePlayer(String name) {
         for (Player player : players) {

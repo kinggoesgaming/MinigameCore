@@ -22,27 +22,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package me.flibio.minigamecore.arena;
+package io.github.flibio.minigamecore.arena;
 
-public class ArenaState {
-
-    private String stateName;
-
-    /**
-     * An ArenaState is used to identify which state the arena is in
-     * 
-     * @param stateName The name of the arena state
-     */
-    public ArenaState(String stateName) {
-        this.stateName = stateName;
-    }
+/**
+ * Contains all of the default arena states.
+ */
+public class ArenaStates {
 
     /**
-     * Gets the name of the state
-     * 
-     * @return The state name
+     * Wating for the minimum amount of players to join.
      */
-    public String getStateName() {
-        return this.stateName;
-    }
+    public static final ArenaState LOBBY_WAITING = ArenaState.of("LOBBY_WAITING");
+
+    /**
+     * Counting down until the game begins.
+     */
+    public static final ArenaState LOBBY_COUNTDOWN = ArenaState.of("LOBBY_COUNTDOWN");
+
+    /**
+     * Players are in the arena, waiting for the game to begin.
+     */
+    public static final ArenaState GAME_COUNTDOWN = ArenaState.of("GAME_COUNTDOWN");
+
+    /**
+     * The game is currently in progress.
+     */
+    public static final ArenaState GAME_PLAYING = ArenaState.of("GAME_PLAYING");
+
+    /**
+     * The game has ended and players will return to the lobby.
+     */
+    public static final ArenaState GAME_OVER = ArenaState.of("GAME_OVER");
+
 }

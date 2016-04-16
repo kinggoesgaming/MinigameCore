@@ -22,18 +22,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package me.flibio.minigamecore;
+package io.github.flibio.minigamecore.arena;
 
-/**
- * General information about the {@link Minigamecore} plugin
- */
-public class PluginInfo {
+public class ArenaState {
 
-    private PluginInfo() {
+    private String stateName;
+
+    /**
+     * An ArenaState is used to identify which state the arena is in.
+     * 
+     * @param stateName The name of the arena state.
+     */
+    protected ArenaState(String stateName) {
+        this.stateName = stateName;
     }
 
-    public static final String ID = "MinigameCore";
-    public static final String NAME = "MinigameCore";
-    public static final String VERSION = "@project.version@";
-    public static final String DEPENDENCIES = "";
+    /**
+     * Creates a new arena state using the given name.
+     * 
+     * @param stateName The name of the arena state.
+     * @return The created arena state.
+     */
+    public static ArenaState of(String stateName) {
+        return new ArenaState(stateName);
+    }
+
+    /**
+     * Gets the name of the state.
+     * 
+     * @return The state name.
+     */
+    public String getName() {
+        return this.stateName;
+    }
 }

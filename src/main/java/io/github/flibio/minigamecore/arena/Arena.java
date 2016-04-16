@@ -22,134 +22,134 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package me.flibio.minigamecore.arena;
-
-import me.flibio.minigamecore.events.ArenaStateChangeEvent;
+package io.github.flibio.minigamecore.arena;
 
 import org.spongepowered.api.Game;
-import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.data.ChangeDataHolderEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
+import io.github.flibio.minigamecore.events.ArenaStateChangeEvent;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class Arena {
 
-    private CopyOnWriteArrayList<ArenaState> arenaStates = new CopyOnWriteArrayList<ArenaState>(getDefaultArenaStates());
-    private ConcurrentHashMap<ArenaState, Runnable> runnables = new ConcurrentHashMap<ArenaState, Runnable>();
+    private ArrayList<ArenaState> arenaStates = new ArrayList<>(getDefaultArenaStates());
+    private HashMap<ArenaState, Runnable> runnables = new HashMap<>();
 
-    private CopyOnWriteArrayList<Player> onlinePlayers = new CopyOnWriteArrayList<Player>();
+    private ArrayList<Player> onlinePlayers = new ArrayList<>();
     private ArenaState arenaState;
 
     private ArenaData arenaData;
 
     private Game game;
+    private Object plugin;
 
     /**
-     * An arena is an object that can handle spawn locations, lobbies, games,
-     * and more.
+     * Creates a new Arena.
      * 
-     * @param arenaName The name of the arena
-     * @param game An instance of the game
-     * @param plugin An instance of the main class of your plugin
+     * @param arenaName The name of the arena.
+     * @param game An instance of the game.
+     * @param plugin An instance of the main class of the plugin.
      */
     public Arena(String arenaName, Game game, Object plugin) {
         this.arenaData = new ArenaData(arenaName);
         this.game = game;
+        this.plugin = plugin;
         this.arenaState = ArenaStates.LOBBY_WAITING;
 
         game.getEventManager().registerListeners(plugin, this);
     }
 
     /**
-     * Adds an online player
+     * Adds an online player.
      * 
-     * @param player The player to add
+     * @param player The player to add.
      */
     public abstract void addOnlinePlayer(Player player);
 
     /**
-     * Removes an online player
+     * Removes an online player.
      * 
-     * @param player The player to remove
+     * @param player The player to remove.
      */
     public abstract void removeOnlinePlayer(Player player);
 
     /**
-     * Gets all of the players in an arena
+     * Gets all of the players in an arena.
      * 
-     * @return All the players in the arena
+     * @return All the players in the arena.
      */
-    public CopyOnWriteArrayList<Player> getOnlinePlayers() {
+    public ArrayList<Player> getOnlinePlayers() {
         return onlinePlayers;
     }
 
     /**
-     * Calls an state change on the arena
+     * Calls a state change on the arena.
      * 
-     * @param changeTo The state to change the arena to
+     * @param newState The {@link ArenaState} to change the arena to.
      */
-    public void arenaStateChange(ArenaState changeTo) {
-        if (!arenaStates.contains(changeTo)) {
+    public void arenaStateChange(ArenaState newState) {
+        if (!arenaStates.contains(newState)) {
             return;
         }
-        arenaState = changeTo;
-        // Post the arena state change event
-        game.getEventManager().post(new ArenaStateChangeEvent(this));
-        // Run a runnable if it is set
-        if (arenaStateRunnableExists(changeTo)) {
-            runnables.get(changeTo).run();
+        arenaState = newState;
+        game.getEventManager().post(new ArenaStateChangeEvent(this, plugin));
+        if (arenaStateRunnableExists(newState)) {
+            runnables.get(newState).run();
         }
     }
 
     // Other Arena Properties
 
     /**
-     * Gets the arena data
+     * Gets the {@link ArenaData}.
      * 
-     * @return The arena data
+     * @return The {@link ArenaData}.
      */
     public ArenaData getData() {
         return arenaData;
     }
 
     /**
-     * Sets the arena data
+     * Overrides the current {@link ArenaData}.
      * 
-     * @param data The arena data to set
+     * @param data The {@link ArenaData} that will override the current
+     *        {@link ArenaData}.
      */
     public void overrideData(ArenaData data) {
         arenaData = data;
     }
 
     /**
-     * Gets the state of the arena
+     * Gets the current {@link ArenaState}.
      * 
-     * @return The state of the arena
+     * @return The current {@link ArenaState}.
      */
     public ArenaState getArenaState() {
         return arenaState;
     }
 
     /**
-     * Adds a new arena state
+     * Adds a new {@link ArenaState}.
      * 
-     * @param state The arena state to add
-     * @return If the method was successful or not
+     * @param state The {@link ArenaState} to add.
+     * @return If the {@link ArenaState} was successfully added.
      */
     public boolean addArenaState(ArenaState state) {
-        // Check ifthe state exists
         if (arenaStateExists(state)) {
             return false;
         } else {
@@ -159,13 +159,12 @@ public abstract class Arena {
     }
 
     /**
-     * Removes an arena state
+     * Removes an {@link ArenaState}.
      * 
-     * @param state The arena state to remove
-     * @return If the method was successful or not
+     * @param state The {@link ArenaState} to remove.
+     * @return If the {@link ArenaState} was successfully removed.
      */
     public boolean removeArenaState(ArenaState state) {
-        // Check ifthe state is a default state
         if (getDefaultArenaStates().contains(state) || !arenaStateExists(state)) {
             return false;
         } else {
@@ -178,31 +177,31 @@ public abstract class Arena {
     }
 
     /**
-     * Checks if an arena state exists
+     * Checks if an {@link ArenaState} exists.
      * 
-     * @param arenaState The arena state to check for
-     * @return If the arena state exists
+     * @param arenaState The {@link ArenaState} to check for.
+     * @return If the {@link ArenaState} exists.
      */
     public boolean arenaStateExists(ArenaState arenaState) {
         return arenaStates.contains(arenaState);
     }
 
     /**
-     * Gets a list of the default arena states
+     * Gets a list of the default {@link ArenaState}s.
      * 
-     * @return A list of the default arena states
+     * @return A list of the default {@link ArenaState}s.
      */
     public List<ArenaState> getDefaultArenaStates() {
         return Arrays.asList(ArenaStates.LOBBY_WAITING, ArenaStates.LOBBY_COUNTDOWN, ArenaStates.GAME_COUNTDOWN,
-                ArenaStates.GAME_PLAYING, ArenaStates.GAME_OVER, ArenaStates.COUNTDOWN_CANCELLED);
+                ArenaStates.GAME_PLAYING, ArenaStates.GAME_OVER);
     }
 
     /**
-     * Adds an arena state runnable
+     * Adds an {@link ArenaState} runnable.
      * 
-     * @param state The state to add
-     * @param runnable The runnable to add
-     * @return If the method was successful or not
+     * @param state The {@link ArenaState} to add.
+     * @param runnable The runnable to add.
+     * @return If the method was successful or not.
      */
     public boolean addArenaStateRunnable(ArenaState state, Runnable runnable) {
         if (!arenaStateExists(state) || arenaStateRunnableExists(state)) {
@@ -213,10 +212,10 @@ public abstract class Arena {
     }
 
     /**
-     * Removes an arena state runnable
+     * Removes an {@link ArenaState} runnable.
      * 
-     * @param state The arena state to remove
-     * @return If the method was successful or not
+     * @param state The {@link ArenaState} to remove.
+     * @return If the {@link ArenaState} was successfully removed.
      */
     public boolean removeArenaStateRunnable(ArenaState state) {
         if (!arenaStateExists(state) || !arenaStateRunnableExists(state)) {
@@ -227,20 +226,20 @@ public abstract class Arena {
     }
 
     /**
-     * Checks if an arena state runnable exists
+     * Checks if an {@link ArenaState} runnable exists.
      * 
-     * @param state The state to check for
-     * @return If the arena state runnable exists
+     * @param state The {@link ArenaState} to check for.
+     * @return If the {@link ArenaState} runnable exists.
      */
     public boolean arenaStateRunnableExists(ArenaState state) {
         return runnables.keySet().contains(state);
     }
 
     /**
-     * Gets an arena state runnable
+     * Gets an {@link ArenaState} runnable.
      * 
-     * @param state The state to get the runnable of
-     * @return The arena state runnable
+     * @param state The {@link ArenaState} to get the runnable of.
+     * @return The {@link ArenaState} runnable.
      */
     public Optional<Runnable> getArenaStateRunnable(ArenaState state) {
         if (arenaStateRunnableExists(state)) {
@@ -251,45 +250,22 @@ public abstract class Arena {
     }
 
     /**
-     * Deserializes XML formatted text. Example: <c n="red">Something went
-     * wrong!</c>
+     * Sends a message to each player.
      * 
-     * @param text The text to deserialize
-     * @return The deserialzed text
-     */
-    public Text deserialize(String text) {
-        return TextSerializers.TEXT_XML.deserialize(text);
-    }
-
-    /**
-     * Deserializes XML formatted text. Example: <c n="green">%name% has joined
-     * the game!</c>
-     * 
-     * @param text The text to deserialize
-     * @param old The string to replace before deserialization
-     * @param replacement What to replace the string with
-     * @return The deserialzed text
-     */
-    public Text deserialize(String text, String old, String replacement) {
-        text.replaceAll(old, replacement);
-        return TextSerializers.TEXT_XML.deserialize(text);
-    }
-
-    /**
-     * Broadcasts the message to the entire server
-     * 
-     * @param text The text to broadcast
+     * @param text The text to send.
      */
     public void broadcast(Text text) {
-        Sponge.getGame().getServer().getBroadcastChannel().send(text);
+        for (Player player : onlinePlayers) {
+            player.sendMessage(text);
+        }
     }
 
     /**
-     * Plays a sound to all players in the game
+     * Plays a sound to all players in the game.
      * 
-     * @param type The type of sound to play
-     * @param volume The volume of the sound
-     * @param pitch The pitch of the sound
+     * @param type The type of sound to play.
+     * @param volume The volume of the sound.
+     * @param pitch The pitch of the sound.
      */
     public void broadcastSound(SoundType type, int volume, int pitch) {
         for (Player player : onlinePlayers) {
@@ -318,28 +294,31 @@ public abstract class Arena {
     }
 
     @Listener
-    public void onBlockModify(ChangeBlockEvent event) {
-        Optional<Player> playerOptional = event.getCause().first(Player.class);
-        if (!playerOptional.isPresent())
-            return;
+    public void onBlockModify(ChangeBlockEvent event, @First Player player) {
         if (!arenaData.isModifyLobbyBlocks()) {
-            if (arenaState.equals(ArenaStates.COUNTDOWN_CANCELLED) || arenaState.equals(ArenaStates.LOBBY_COUNTDOWN) ||
-                    arenaState.equals(ArenaStates.LOBBY_WAITING)) {
+            if (arenaState.equals(ArenaStates.LOBBY_COUNTDOWN) || arenaState.equals(ArenaStates.LOBBY_WAITING)) {
                 event.setCancelled(true);
             }
         }
     }
 
     @Listener
-    public void onPlayerDamage(DamageEntityEvent event) {
-        Optional<Player> playerOptional = event.getCause().first(Player.class);
-        if (event.getTargetEntity() instanceof Player || playerOptional.isPresent()) {
-            if (!arenaData.isAllowLobbyDamage()) {
-                if (arenaState.equals(ArenaStates.COUNTDOWN_CANCELLED) || arenaState.equals(ArenaStates.LOBBY_COUNTDOWN) ||
-                        arenaState.equals(ArenaStates.LOBBY_WAITING)) {
+    public void onPlayerDamage(DamageEntityEvent event, @First Player player) {
+        if (!arenaData.isAllowLobbyDamage()) {
+            if (arenaState.equals(ArenaStates.LOBBY_COUNTDOWN) || arenaState.equals(ArenaStates.LOBBY_WAITING)) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @Listener
+    public void onHungerChange(ChangeDataHolderEvent.ValueChange event) {
+        if (!arenaData.isAllowHungerLoss()) {
+            event.getEndResult().getReplacedData().forEach(iv -> {
+                if (iv.getKey().equals(Keys.FOOD_LEVEL)) {
                     event.setCancelled(true);
                 }
-            }
+            });
         }
     }
 }

@@ -22,13 +22,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package me.flibio.minigamecore.economy;
-
-import me.flibio.minigamecore.MinigameCore;
+package io.github.flibio.minigamecore.economy;
 
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
@@ -45,16 +44,18 @@ public class EconomyManager {
 
     private EconomyService economy;
 
-    private Cause cause = Cause.of("MinigameCore");
+    private Cause cause;
     private Currency currency;
 
     /**
-     * Provides easy-to-use economy integration
+     * Provides economy integration for minigames.
      * 
-     * @param game The game object
+     * @param game The game object.
+     * @param plugin The plugin object.
      */
-    public EconomyManager(Game game) {
-        game.getEventManager().registerListeners(MinigameCore.access, this);
+    public EconomyManager(Game game, Object plugin) {
+        cause = Cause.of(NamedCause.of("MinigameCore", plugin));
+        game.getEventManager().registerListeners(plugin, this);
     }
 
     @Listener
@@ -72,16 +73,25 @@ public class EconomyManager {
     }
 
     /**
-     * Sets the balance of a player
+     * Checks if MinigameCore found an economy plugin.
      * 
-     * @param uuid UUID of the player whose balance to change
-     * @param amount The amount to set the player's balance to
-     * @return Boolean based on if the method was successful or not
+     * @return If MinigameCore found an economy plugin.
+     */
+    public boolean foundEconomy() {
+        return foundProvider;
+    }
+
+    /**
+     * Sets the balance of a player.
+     * 
+     * @param uuid UUID of the player whose balance to change.
+     * @param amount The amount to set the player's balance to.
+     * @return Boolean based on if the method was successful or not.
      */
     public boolean setBalance(UUID uuid, BigDecimal amount) {
         if (!foundProvider)
             return false;
-        Optional<UniqueAccount> uOpt = economy.getAccount(uuid);
+        Optional<UniqueAccount> uOpt = economy.getOrCreateAccount(uuid);
         if (!uOpt.isPresent())
             return false;
         UniqueAccount account = uOpt.get();
@@ -93,15 +103,15 @@ public class EconomyManager {
     }
 
     /**
-     * Gets the balance of a player
+     * Gets the balance of a player.
      * 
-     * @param uuid UUID of the player to get the balance of
-     * @return The balance of the player
+     * @param uuid UUID of the player to get the balance of.
+     * @return The balance of the player.
      */
     public Optional<BigDecimal> getBalance(UUID uuid) {
         if (!foundProvider)
             return Optional.empty();
-        Optional<UniqueAccount> uOpt = economy.getAccount(uuid);
+        Optional<UniqueAccount> uOpt = economy.getOrCreateAccount(uuid);
         if (!uOpt.isPresent())
             return Optional.empty();
         UniqueAccount account = uOpt.get();
@@ -109,16 +119,16 @@ public class EconomyManager {
     }
 
     /**
-     * Adds currency to a players balance
+     * Adds currency to a players balance.
      * 
-     * @param uuid UUID of the player whose balance to change
-     * @param amount Amount of currency to add to the player
-     * @return Boolean based on if the method was successful or not
+     * @param uuid UUID of the player whose balance to change.
+     * @param amount Amount of currency to add to the player.
+     * @return Boolean based on if the method was successful or not.
      */
     public boolean addCurrency(UUID uuid, BigDecimal amount) {
         if (!foundProvider)
             return false;
-        Optional<UniqueAccount> uOpt = economy.getAccount(uuid);
+        Optional<UniqueAccount> uOpt = economy.getOrCreateAccount(uuid);
         if (!uOpt.isPresent())
             return false;
         UniqueAccount account = uOpt.get();
@@ -130,16 +140,16 @@ public class EconomyManager {
     }
 
     /**
-     * Removes currency from a players balance
+     * Removes currency from a players balance.
      * 
-     * @param uuid UUID of the player whose balance to change
-     * @param amount Amount of currency to remove from the player
-     * @return Boolean based on if the method was successful or not
+     * @param uuid UUID of the player whose balance to change.
+     * @param amount Amount of currency to remove from the player.
+     * @return Boolean based on if the method was successful or not.
      */
     public boolean removeCurrency(UUID uuid, BigDecimal amount) {
         if (!foundProvider)
             return false;
-        Optional<UniqueAccount> uOpt = economy.getAccount(uuid);
+        Optional<UniqueAccount> uOpt = economy.getOrCreateAccount(uuid);
         if (!uOpt.isPresent())
             return false;
         UniqueAccount account = uOpt.get();

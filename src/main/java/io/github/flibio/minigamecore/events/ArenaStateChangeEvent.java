@@ -22,52 +22,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package me.flibio.minigamecore.scoreboards;
+package io.github.flibio.minigamecore.events;
 
-import org.spongepowered.api.Game;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.impl.AbstractEvent;
 
-import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
+import io.github.flibio.minigamecore.arena.Arena;
 
-public class ScoreboardManager {
+public class ArenaStateChangeEvent extends AbstractEvent {
 
-    public enum ScoreboardType {
-        INFO, ABOVE_NAME, LEADERBOARD
-    }
+    private Arena arena;
+    private Object plugin;
 
-    private CopyOnWriteArrayList<MinigameCoreScoreboard> scoreboards = new CopyOnWriteArrayList<MinigameCoreScoreboard>();
-
-    public ScoreboardManager(Game game) {
-
+    /**
+     * Called when an arena changes its state.
+     * 
+     * @param arena The arena whose state changed.
+     */
+    public ArenaStateChangeEvent(Arena arena, Object plugin) {
+        this.arena = arena;
     }
 
     /**
-     * Gets a scoreboard
+     * Gets whichever arena's state changed.
      * 
-     * @param name Name of the scoreboard to get
-     * @return The scoreboard
+     * @return The arena whose state changed.
      */
-    public Optional<MinigameCoreScoreboard> getScoreboard(String name) {
-        for (MinigameCoreScoreboard scoreboard : scoreboards) {
-            if (scoreboard.getName().toLowerCase().equalsIgnoreCase(name)) {
-                Optional.of(scoreboard);
-            }
-        }
-        return Optional.empty();
+    public Arena getArena() {
+        return this.arena;
     }
 
-    /**
-     * Checks if a scoreboard exists
-     * 
-     * @param name Name of the scoreboard to check for
-     * @return Boolean based on if the scoreboard exists or not
-     */
-    public boolean scoreboardExists(String name) {
-        for (MinigameCoreScoreboard scoreboard : scoreboards) {
-            if (scoreboard.getName().toLowerCase().equalsIgnoreCase(name)) {
-                return true;
-            }
-        }
-        return false;
+    @Override
+    public Cause getCause() {
+        return Cause.of(NamedCause.of("MinigameCore", plugin));
     }
+
 }

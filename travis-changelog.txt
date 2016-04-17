@@ -1,1 +1,1 @@
-- Added support for spotless code style checking\r\n- Travis build changes
+- Changed built-in protection to work only on set states

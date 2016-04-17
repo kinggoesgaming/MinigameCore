@@ -24,8 +24,11 @@
  */
 package io.github.flibio.minigamecore.arena;
 
-public class ArenaState {
+import java.io.Serializable;
 
+public class ArenaState implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private String stateName;
 
     /**

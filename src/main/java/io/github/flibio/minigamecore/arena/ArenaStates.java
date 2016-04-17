@@ -24,6 +24,9 @@
  */
 package io.github.flibio.minigamecore.arena;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Contains all of the default arena states.
  */
@@ -53,5 +56,10 @@ public class ArenaStates {
      * The game has ended and players will return to the lobby.
      */
     public static final ArenaState GAME_OVER = ArenaState.of("GAME_OVER");
+
+    /**
+     * All of the default arena states.
+     */
+    public static final List<ArenaState> ALL = Arrays.asList(LOBBY_WAITING, LOBBY_COUNTDOWN, GAME_COUNTDOWN, GAME_PLAYING, GAME_OVER);
 
 }

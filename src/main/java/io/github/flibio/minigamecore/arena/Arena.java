@@ -39,14 +39,13 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 public abstract class Arena {
 
-    private ArrayList<ArenaState> arenaStates = new ArrayList<>(getDefaultArenaStates());
+    private ArrayList<ArenaState> arenaStates = new ArrayList<>(ArenaStates.ALL);
     private HashMap<ArenaState, Runnable> runnables = new HashMap<>();
 
     private ArrayList<Player> onlinePlayers = new ArrayList<>();
@@ -138,7 +137,7 @@ public abstract class Arena {
      * 
      * @return The current {@link ArenaState}.
      */
-    public ArenaState getArenaState() {
+    public ArenaState getCurrentState() {
         return arenaState;
     }
 
@@ -164,7 +163,7 @@ public abstract class Arena {
      * @return If the {@link ArenaState} was successfully removed.
      */
     public boolean removeArenaState(ArenaState state) {
-        if (getDefaultArenaStates().contains(state) || !arenaStateExists(state)) {
+        if (ArenaStates.ALL.contains(state) || !arenaStateExists(state)) {
             return false;
         } else {
             if (runnables.keySet().contains(state)) {
@@ -186,13 +185,12 @@ public abstract class Arena {
     }
 
     /**
-     * Gets a list of the default {@link ArenaState}s.
+     * Gets all of the {@link ArenaState}s registered with this arena.
      * 
-     * @return A list of the default {@link ArenaState}s.
+     * @return All of the {@link ArenaState}s registered with this arena.
      */
-    public List<ArenaState> getDefaultArenaStates() {
-        return Arrays.asList(ArenaStates.LOBBY_WAITING, ArenaStates.LOBBY_COUNTDOWN, ArenaStates.GAME_COUNTDOWN,
-                ArenaStates.GAME_PLAYING, ArenaStates.GAME_OVER);
+    public List<ArenaState> getArenaStates() {
+        return arenaStates;
     }
 
     /**
@@ -294,25 +292,21 @@ public abstract class Arena {
 
     @Listener
     public void onBlockModify(ChangeBlockEvent event, @First Player player) {
-        if (!arenaData.isModifyLobbyBlocks()) {
-            if (arenaState.equals(ArenaStates.LOBBY_COUNTDOWN) || arenaState.equals(ArenaStates.LOBBY_WAITING)) {
-                event.setCancelled(true);
-            }
+        if (arenaData.getPreventBlockModify().contains(arenaState)) {
+            event.setCancelled(true);
         }
     }
 
     @Listener
     public void onPlayerDamage(DamageEntityEvent event, @First Player player) {
-        if (!arenaData.isAllowLobbyDamage()) {
-            if (arenaState.equals(ArenaStates.LOBBY_COUNTDOWN) || arenaState.equals(ArenaStates.LOBBY_WAITING)) {
-                event.setCancelled(true);
-            }
+        if (arenaData.getPreventPlayerDamage().contains(arenaState)) {
+            event.setCancelled(true);
         }
     }
 
     @Listener
     public void onHungerChange(ChangeDataHolderEvent.ValueChange event) {
-        if (!arenaData.isAllowHungerLoss()) {
+        if (arenaData.getPreventHungerLoss().contains(arenaState)) {
             event.getEndResult().getReplacedData().forEach(iv -> {
                 if (iv.getKey().equals(Keys.FOOD_LEVEL)) {
                     event.setCancelled(true);

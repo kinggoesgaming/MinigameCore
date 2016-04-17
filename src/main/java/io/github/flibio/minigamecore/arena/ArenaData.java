@@ -28,7 +28,10 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -40,9 +43,9 @@ public class ArenaData implements Serializable {
 
     private final String name;
     private boolean triggerPlayerEvents = true;
-    private boolean modifyLobbyBlocks = false;
-    private boolean allowLobbyDamage = false;
-    private boolean allowHungerLoss = false;
+    private ArrayList<ArenaState> preventBlockModify = new ArrayList<>();
+    private ArrayList<ArenaState> preventPlayerDamage = new ArrayList<>();
+    private ArrayList<ArenaState> preventHungerLoss = new ArrayList<>();
 
     /**
      * Stores data for the arena.
@@ -86,63 +89,84 @@ public class ArenaData implements Serializable {
     }
 
     /**
-     * Checks if MinigameCore will block players from modifying blocks in the
-     * lobby.
+     * Adds a state that block modification will be prevented on.
      * 
-     * @return If MinigameCore will block players from modifying blocks in the
-     *         lobby.
+     * @param state State that block modification will be prevented on.
      */
-    public boolean isModifyLobbyBlocks() {
-        return modifyLobbyBlocks;
+    public void addPreventBlockModify(ArenaState state) {
+        preventBlockModify.add(state);
     }
 
     /**
-     * Sets if MinigameCore will block players from modifying blocks in the
-     * lobby.
+     * Adds states that block modification will be prevented on.
      * 
-     * @param defaultPlayerEventActions If MinigameCore will block players from
-     *        modifying blocks in the lobby.
+     * @param states States that block modification will be prevented on.
      */
-    public void setModifyLobbyBlocks(boolean modifyLobbyBlocks) {
-        this.modifyLobbyBlocks = modifyLobbyBlocks;
+    public void addPreventBlockModify(Collection<? extends ArenaState> states) {
+        preventBlockModify.addAll(states);
     }
 
     /**
-     * Checks if MinigameCore will allow players to take damage in the lobby.
+     * Gets all states that block modification will be prevented on.
      * 
-     * @return If MinigameCore will allow players to take damage in the lobby.
+     * @return All states that block modification will be prevented on.
      */
-    public boolean isAllowLobbyDamage() {
-        return allowLobbyDamage;
+    public List<ArenaState> getPreventBlockModify() {
+        return preventBlockModify;
     }
 
     /**
-     * Sets if MinigameCore will allow players to take damage in the lobby.
+     * Adds a state that player damage will be prevented on.
      * 
-     * @param allowLobbyDamage If MinigameCore will allow players to take damage
-     *        in the lobby.
+     * @param state State that player damage will be prevented on.
      */
-    public void setAllowLobbyDamage(boolean allowLobbyDamage) {
-        this.allowLobbyDamage = allowLobbyDamage;
+    public void addPreventPlayerDamage(ArenaState state) {
+        preventPlayerDamage.add(state);
     }
 
     /**
-     * Checks if MinigameCore will allow players to lose hunger.
+     * Adds states that player damage will be prevented on.
      * 
-     * @return If MinigameCore will allow players to lose hunger.
+     * @param states States that player damage will be prevented on.
      */
-    public boolean isAllowHungerLoss() {
-        return allowHungerLoss;
+    public void addPreventPlayerDamage(Collection<? extends ArenaState> states) {
+        preventPlayerDamage.addAll(states);
     }
 
     /**
-     * Sets if MinigameCore will allow players to lose hunger.
+     * Gets all states that player damage will be prevented on.
      * 
-     * @param allowLobbyDamage If MinigameCore will allow players to lose
-     *        hunger.
+     * @return All states that player damage will be prevented on.
      */
-    public void setAllowHungerLoss(boolean allowHungerLoss) {
-        this.allowHungerLoss = allowHungerLoss;
+    public List<ArenaState> getPreventPlayerDamage() {
+        return preventPlayerDamage;
+    }
+
+    /**
+     * Adds a state that hunger loss will be prevented on.
+     * 
+     * @param state State that hunger loss will be prevented on.
+     */
+    public void addPreventHungerLoss(ArenaState state) {
+        preventHungerLoss.add(state);
+    }
+
+    /**
+     * Adds states that hunger loss will be prevented on.
+     * 
+     * @param states States that hunger loss will be prevented on.
+     */
+    public void addPreventHungerLoss(Collection<? extends ArenaState> states) {
+        preventHungerLoss.addAll(states);
+    }
+
+    /**
+     * Gets all states that hunger loss will be prevented on.
+     * 
+     * @return All states that hunger loss will be prevented on.
+     */
+    public List<ArenaState> getPreventHungerLoss() {
+        return preventHungerLoss;
     }
 
     // Custom Variables

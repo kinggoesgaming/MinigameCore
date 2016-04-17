@@ -35,6 +35,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
@@ -149,6 +151,10 @@ public class ArenaManager {
             return true;
         } catch (Exception e) {
             logger.error(e.getMessage());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            logger.error(sw.toString());
             return false;
         }
     }
@@ -167,7 +173,7 @@ public class ArenaManager {
             for (File file : folder.listFiles()) {
                 if (file.isFile()) {
                     String ext = Files.getFileExtension(file.getName());
-                    if (ext.equalsIgnoreCase("arena")) {
+                    if (ext.equalsIgnoreCase("ser")) {
                         FileInputStream fin = new FileInputStream(file);
                         ObjectInputStream ois = new ObjectInputStream(fin);
                         Object raw = ois.readObject();
@@ -181,6 +187,10 @@ public class ArenaManager {
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            logger.error(sw.toString());
         }
         return arenaDatas;
     }

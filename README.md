@@ -4,45 +4,4 @@ MinigameCore is a framework for Sponge that provides a core set of functions to 
 
 ### Using MinigameCore
 
-In order to use MinigameCore, you must add it as a Gradle dependency.
-
-```gradle
-repositories {
-    maven {
-        url "https://jitpack.io"
-    }
-}
-dependencies {
-    compile 'com.github.MinigameCore:MinigameCore:TARGET_VERSION'
-}
-```
-
-Replace `TARGET_VERSION` with the intended version. The intended version must be a valid GitHub tag on the MinigameCore repository.
-
-After adding MinigameCore as a Gradle dependency, you must add the shadow plugin to your project.
-
-```gradle
-plugins {
-    id 'com.github.johnrengelman.shadow' version '1.2.3'
-}
-
-artifacts {
-  archives shadowJar
-}
-```
-
-Next, add MinigameCore to the Shadow JAR and relocate it.
-
-```gradle
-shadowJar {
-    dependencies {
-      include dependency('com.github.MinigameCore:MinigameCore')
-    }
-  
-    relocate 'io.github.flibio.minigamecore', 'YOUR.PLUGIN.PACKAGE.minigamecore'
-}
-```
-
-Replace `YOUR.PLUGIN.PACKAGE` with your plugin package.
-
-Finally, refresh your Gradle dependencies. You can now develop an awesome minigame plugin using MinigameCore!
+Please read the [official documentation](https://github.com/MinigameCore/Docs) to learn how to use MinigameCore in your plugin.

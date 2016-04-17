@@ -150,7 +150,7 @@ public class ArenaManager {
             oos.close();
             return true;
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("Could not save ArenaData of "+data.getName());
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
@@ -186,7 +186,7 @@ public class ArenaManager {
                 }
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("An error occurred while loading ArenaData!");
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);

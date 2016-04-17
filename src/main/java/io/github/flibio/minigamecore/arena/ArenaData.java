@@ -29,13 +29,14 @@ import org.spongepowered.api.world.World;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 public class ArenaData implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private HashMap<String, Object> customVariables = new HashMap<>();
-    private HashMap<String, Location<World>> locations = new HashMap<>();
+    private HashMap<String, SerializableLocation> locations = new HashMap<>();
 
     private final String name;
     private boolean triggerPlayerEvents = true;
@@ -201,7 +202,7 @@ public class ArenaData implements Serializable {
      * @param location The location to assign.
      */
     public void setLocation(String key, Location<World> location) {
-        locations.put(key, location);
+        locations.put(key, SerializableLocation.of(location));
     }
 
     /**
@@ -212,7 +213,7 @@ public class ArenaData implements Serializable {
      */
     public Optional<Location<World>> getLocation(String key) {
         if (locations.containsKey(key)) {
-            return Optional.of(locations.get(key));
+            return Optional.of(locations.get(key).createLocation());
         } else {
             return Optional.empty();
         }
@@ -224,7 +225,10 @@ public class ArenaData implements Serializable {
      * @return A HashMap of all of the locations.
      */
     public HashMap<String, Location<World>> getLocations() {
-        final HashMap<String, Location<World>> toReturn = this.locations;
+        HashMap<String, Location<World>> toReturn = new HashMap<>();
+        for (Entry<String, SerializableLocation> entry : locations.entrySet()) {
+            toReturn.put(entry.getKey(), entry.getValue().createLocation());
+        }
         return toReturn;
     }
 

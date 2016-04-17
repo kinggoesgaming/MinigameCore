@@ -4,4 +4,4 @@ MinigameCore is a framework for Sponge that provides a core set of functions to 
 
 ### Using MinigameCore
 
-Please read the [official documentation](https://github.com/MinigameCore/Docs) to learn how to use MinigameCore in your plugin.
+Please read the [official documentation](http://minigamecore.github.io/Docs/) to learn how to use MinigameCore in your plugin.

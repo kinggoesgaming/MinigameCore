@@ -139,7 +139,7 @@ public class ArenaManager {
      */
     public boolean saveArenaData(ArenaData data) {
         try {
-            File file = new File("config/" + folderName + "/arenas/" + data.getName() + ".arena");
+            File file = new File("config/" + folderName + "/arenas/" + data.getName() + ".ser");
             file.mkdirs();
             logger.debug("Attempting to save ArenaData to " + file.getPath());
             FileOutputStream fout = new FileOutputStream(file);

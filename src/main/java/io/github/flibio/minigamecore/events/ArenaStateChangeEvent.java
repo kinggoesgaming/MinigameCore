@@ -24,11 +24,10 @@
  */
 package io.github.flibio.minigamecore.events;
 
+import io.github.flibio.minigamecore.arena.Arena;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.impl.AbstractEvent;
-
-import io.github.flibio.minigamecore.arena.Arena;
 
 public class ArenaStateChangeEvent extends AbstractEvent {
 

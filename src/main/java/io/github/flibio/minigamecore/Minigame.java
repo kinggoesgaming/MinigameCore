@@ -24,14 +24,13 @@
  */
 package io.github.flibio.minigamecore;
 
-import org.spongepowered.api.Game;
-import org.spongepowered.api.Sponge;
-
 import io.github.flibio.minigamecore.arena.ArenaManager;
 import io.github.flibio.minigamecore.economy.EconomyManager;
 import io.github.flibio.minigamecore.kits.KitManager;
 import io.github.flibio.minigamecore.scoreboards.ScoreboardManager;
 import io.github.flibio.minigamecore.teams.TeamManager;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 
 import java.util.Optional;
 

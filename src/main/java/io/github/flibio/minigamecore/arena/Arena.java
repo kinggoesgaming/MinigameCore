@@ -24,6 +24,7 @@
  */
 package io.github.flibio.minigamecore.arena;
 
+import io.github.flibio.minigamecore.events.ArenaStateChangeEvent;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.effect.sound.SoundType;
@@ -36,8 +37,6 @@ import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
-
-import io.github.flibio.minigamecore.events.ArenaStateChangeEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;

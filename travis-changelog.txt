@@ -1,0 +1,1 @@
+- Added support for spotless code style checking\r\n- Travis build changes

@@ -24,11 +24,10 @@
  */
 package io.github.flibio.minigamecore.arena;
 
+import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.Plugin;
-
-import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -150,7 +149,7 @@ public class ArenaManager {
             oos.close();
             return true;
         } catch (Exception e) {
-            logger.error("Could not save ArenaData of "+data.getName());
+            logger.error("Could not save ArenaData of " + data.getName());
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);

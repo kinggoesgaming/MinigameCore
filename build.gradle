@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'maven'
     id 'com.github.hierynomus.license' version '0.12.1'
-    id 'com.github.johnrengelman.shadow' version '1.2.3'
+    id 'com.diffplug.gradle.spotless' version '1.3.2'
 }
 
 sourceCompatibility = '1.8'
@@ -11,7 +11,7 @@ targetCompatibility = '1.8'
 
 group 'io.github.flibio'
 
-defaultTasks 'licenseFormat', 'clean', 'build'
+defaultTasks 'licenseFormat', 'clean', 'spotlessJavaCheck', 'build'
 
 repositories {
     mavenCentral()
@@ -27,19 +27,13 @@ repositories {
 
 dependencies {
     compile 'org.spongepowered:spongeapi:4.1.0-SNAPSHOT'
-    compile 'com.github.flibiostudio:utils:1.5.1'
 }
 
-shadowJar {
-    dependencies {
-        include dependency('com.github.flibiostudio:utils')
+spotless {
+    java {
+        importOrderFile 'spotless.importorder'
+        eclipseFormatFile 'spotless.eclipseformat.xml'
     }
-    
-    relocate 'io.github.flibio.utils', 'io.github.flibio.minigamecore.utils'
-}
-
-artifacts {
-    archives shadowJar
 }
 
 license {

@@ -141,8 +141,8 @@ public class ArenaManager {
      */
     public boolean saveArenaData(ArenaData data) {
         try {
+            new File("config/" + folderName + "/arenas").mkdirs();
             File file = new File("config/" + folderName + "/arenas/" + data.getName() + ".ser");
-            file.mkdirs();
             logger.debug("Attempting to save ArenaData to " + file.getPath());
             FileOutputStream fout = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fout);
@@ -154,7 +154,7 @@ public class ArenaManager {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
-            logger.error(sw.toString());
+            logger.debug(sw.toString());
             return false;
         }
     }
@@ -190,7 +190,7 @@ public class ArenaManager {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
-            logger.error(sw.toString());
+            logger.debug(sw.toString());
         }
         return arenaDatas;
     }

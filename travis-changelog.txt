@@ -1,1 +1,1 @@
-- Changed built-in protection to work only on set states
+- Added method to get all arenas from an `ArenaManager`

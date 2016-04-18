@@ -38,6 +38,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -130,6 +131,15 @@ public class ArenaManager {
             }
         }
         return false;
+    }
+
+    /**
+     * Gets all arenas registered with the minigame.
+     * 
+     * @return All arenas registered with the minigame.
+     */
+    public List<Arena> getArenas() {
+        return arenas;
     }
 
     /**

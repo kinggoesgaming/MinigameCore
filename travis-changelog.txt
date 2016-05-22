@@ -1,1 +1,1 @@
-- Added method to get all arenas from an `ArenaManager`
+- Change online players array to protected

@@ -48,7 +48,7 @@ public abstract class Arena {
     private ArrayList<ArenaState> arenaStates = new ArrayList<>(ArenaStates.ALL);
     private HashMap<ArenaState, Runnable> runnables = new HashMap<>();
 
-    private ArrayList<Player> onlinePlayers = new ArrayList<>();
+    protected ArrayList<Player> onlinePlayers = new ArrayList<>();
     private ArenaState arenaState;
 
     private ArenaData arenaData;

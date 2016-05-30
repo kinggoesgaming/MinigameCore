@@ -40,7 +40,7 @@ import java.util.UUID;
 
 public class EconomyManager {
 
-    private boolean foundProvider = true;
+    private boolean foundProvider = false;
 
     private EconomyService economy;
 
@@ -66,8 +66,6 @@ public class EconomyManager {
                 foundProvider = true;
                 economy = (EconomyService) raw;
                 currency = economy.getDefaultCurrency();
-            } else {
-                foundProvider = false;
             }
         }
     }
@@ -91,6 +89,7 @@ public class EconomyManager {
     public boolean setBalance(UUID uuid, BigDecimal amount) {
         if (!foundProvider)
             return false;
+        currency = economy.getDefaultCurrency();
         Optional<UniqueAccount> uOpt = economy.getOrCreateAccount(uuid);
         if (!uOpt.isPresent())
             return false;
@@ -111,6 +110,7 @@ public class EconomyManager {
     public Optional<BigDecimal> getBalance(UUID uuid) {
         if (!foundProvider)
             return Optional.empty();
+        currency = economy.getDefaultCurrency();
         Optional<UniqueAccount> uOpt = economy.getOrCreateAccount(uuid);
         if (!uOpt.isPresent())
             return Optional.empty();
@@ -128,6 +128,7 @@ public class EconomyManager {
     public boolean addCurrency(UUID uuid, BigDecimal amount) {
         if (!foundProvider)
             return false;
+        currency = economy.getDefaultCurrency();
         Optional<UniqueAccount> uOpt = economy.getOrCreateAccount(uuid);
         if (!uOpt.isPresent())
             return false;
@@ -149,6 +150,7 @@ public class EconomyManager {
     public boolean removeCurrency(UUID uuid, BigDecimal amount) {
         if (!foundProvider)
             return false;
+        currency = economy.getDefaultCurrency();
         Optional<UniqueAccount> uOpt = economy.getOrCreateAccount(uuid);
         if (!uOpt.isPresent())
             return false;

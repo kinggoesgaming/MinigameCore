@@ -1,1 +1,1 @@
-- Added method to get currency in EconomyManager
+- Fix the EconomyManager

@@ -24,6 +24,8 @@
  */
 package io.github.flibio.minigamecore.arena;
 
+import org.spongepowered.api.Sponge;
+
 import io.github.flibio.minigamecore.events.ArenaStateChangeEvent;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.key.Keys;
@@ -42,13 +44,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public abstract class Arena {
 
     private ArrayList<ArenaState> arenaStates = new ArrayList<>(ArenaStates.ALL);
     private HashMap<ArenaState, Runnable> runnables = new HashMap<>();
 
-    protected ArrayList<Player> onlinePlayers = new ArrayList<>();
+    protected ArrayList<UUID> onlinePlayers = new ArrayList<>();
     private ArenaState arenaState;
 
     private ArenaData arenaData;
@@ -91,7 +94,7 @@ public abstract class Arena {
      * 
      * @return All the players in the arena.
      */
-    public ArrayList<Player> getOnlinePlayers() {
+    public ArrayList<UUID> getOnlinePlayers() {
         return onlinePlayers;
     }
 
@@ -252,7 +255,7 @@ public abstract class Arena {
      * @param text The text to send.
      */
     public void broadcast(Text text) {
-        for (Player player : onlinePlayers) {
+        for (Player player : resolvePlayers(onlinePlayers)) {
             player.sendMessage(text);
         }
     }
@@ -265,9 +268,40 @@ public abstract class Arena {
      * @param pitch The pitch of the sound.
      */
     public void broadcastSound(SoundType type, int volume, int pitch) {
-        for (Player player : onlinePlayers) {
+        for (Player player : resolvePlayers(onlinePlayers)) {
             player.playSound(type, player.getLocation().getPosition(), volume, pitch);
         }
+    }
+
+    /**
+     * Converts a UUID to a player object.
+     * 
+     * @param uuid The UUID to convert.
+     * @return The player, if it was found.
+     */
+    public Optional<Player> resolvePlayer(UUID uuid) {
+        for (Player player : Sponge.getServer().getOnlinePlayers()) {
+            if (player.getUniqueId().equals(uuid)) {
+                return Optional.of(player);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Resolves a list of UUID objects to players.
+     * 
+     * @param uuids The UUID list to resolve.
+     * @return The list of players.
+     */
+    public List<Player> resolvePlayers(List<UUID> uuids) {
+        List<Player> players = new ArrayList<>();
+        for (Player player : Sponge.getServer().getOnlinePlayers()) {
+            if (uuids.contains(player.getUniqueId())) {
+                players.add(player);
+            }
+        }
+        return players;
     }
 
     // Listeners

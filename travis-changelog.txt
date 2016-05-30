@@ -1,1 +1,1 @@
-- Change online players array to protected
+- Changed online player array to a UUID list

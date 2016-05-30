@@ -1,1 +1,1 @@
-- Changed online player array to a UUID list
+- Added method to get currency in EconomyManager

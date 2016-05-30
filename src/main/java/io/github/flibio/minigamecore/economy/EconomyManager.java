@@ -160,4 +160,15 @@ public class EconomyManager {
         }
     }
 
+    /**
+     * Gets the currency the server is using.
+     * 
+     * @return The currency the server is using.
+     */
+    public Optional<Currency> getCurrency() {
+        if (!foundProvider)
+            return Optional.empty();
+        return Optional.of(economy.getDefaultCurrency());
+    }
+
 }

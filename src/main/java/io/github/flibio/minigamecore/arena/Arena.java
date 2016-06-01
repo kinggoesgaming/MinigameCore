@@ -24,12 +24,12 @@
  */
 package io.github.flibio.minigamecore.arena;
 
-import org.spongepowered.api.Sponge;
-
 import io.github.flibio.minigamecore.events.ArenaStateChangeEvent;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.effect.sound.SoundType;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -326,15 +326,18 @@ public abstract class Arena {
 
     @Listener
     public void onBlockModify(ChangeBlockEvent event, @First Player player) {
-        if (arenaData.getPreventBlockModify().contains(arenaState)) {
+        if (onlinePlayers.contains(player.getUniqueId()) && arenaData.getPreventBlockModify().contains(arenaState)) {
             event.setCancelled(true);
         }
     }
 
     @Listener
-    public void onPlayerDamage(DamageEntityEvent event, @First Player player) {
-        if (arenaData.getPreventPlayerDamage().contains(arenaState)) {
-            event.setCancelled(true);
+    public void onPlayerDamage(DamageEntityEvent event) {
+        Entity entity = event.getTargetEntity();
+        if (entity instanceof Player) {
+            if (onlinePlayers.contains(((Player) entity).getUniqueId()) && arenaData.getPreventPlayerDamage().contains(arenaState)) {
+                event.setCancelled(true);
+            }
         }
     }
 

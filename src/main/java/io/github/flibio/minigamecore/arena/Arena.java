@@ -326,8 +326,10 @@ public abstract class Arena {
 
     @Listener
     public void onBlockModify(ChangeBlockEvent event, @First Player player) {
-        if (onlinePlayers.contains(player.getUniqueId()) && arenaData.getPreventBlockModify().contains(arenaState)) {
-            event.setCancelled(true);
+        if (event.getCause().root() instanceof Player) {
+            if (onlinePlayers.contains(player.getUniqueId()) && arenaData.getPreventBlockModify().contains(arenaState)) {
+                event.setCancelled(true);
+            }
         }
     }
 

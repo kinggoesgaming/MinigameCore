@@ -1,5 +1,3 @@
-import java.time.LocalDate
-
 plugins {
     id 'eclipse'
     id 'maven'
@@ -10,48 +8,13 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
-defaultTasks 'clean', 'build', 'shadowJar'
+defaultTasks 'shadowJar'
 
-build {
-    logger.lifecycle('MinigameCoreAPI: ' + project(':MinigameCoreAPI').version)
-    logger.lifecycle('SpongeAPI: ' + project(':MinigameCoreAPI').spongeapi)
-    def apifile = new File('apiver.txt')
-    apifile.text = project(':MinigameCoreAPI').version.minus("-SNAPSHOT")
-    def sapifile = new File('sapiver.txt')
-    sapifile.text = project(':MinigameCoreAPI').spongeapi.minus("-SNAPSHOT")
-}
-
-repositories {
-    maven {
-        name 'JitPack'
-        url 'https://jitpack.io'
-    }
-}
+apply from: 'gradle/travis/files.gradle'
+apply from: 'MinigameCoreAPI/gradle/shared.gradle'
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:' + project.spongeapi
     compile project(':MinigameCoreAPI')
-}
-
-spotless {
-    java {
-        importOrderFile 'gradle/spotless/order.importorder'
-        eclipseFormatFile 'gradle/spotless/formatter.xml'
-        custom 'Long literal fix', { it.replaceAll('([0-9_]+) [Ll]', '$1L') }
-    }
-}
-
-license {
-    ext {
-        name = project.name
-        organization = project.organization
-        url = project.url
-        inceptionYear = '2016'
-        currentYear = LocalDate.now().getYear();
-    }
-
-    header = file('gradle/HEADER.txt')
-    include '**/*.java'
 }
 
 spongestart {
@@ -59,11 +22,13 @@ spongestart {
 }
 
 shadowJar {
+    dependsOn build
+
     classifier 'all'
-    baseName 'MinigameCore'
+    baseName project.name
     version = null
     configurations = [project.configurations.compile]
     dependencies {
-        include(dependency('io.github.minigamecore:MinigameCoreAPI'))
+        include(dependency(':MinigameCoreAPI'))
     }
 }

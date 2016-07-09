@@ -1,10 +1,6 @@
 language: java
-sudo: required
-dist: trusty
-
 jdk:
 - oraclejdk8
-- openjdk8
 notifications:
   email: false
   webhooks:
@@ -13,21 +9,23 @@ notifications:
     on_success: change
     on_failure: always
     on_start: never
-install:   
-- mkdir travis-phantomjs   
-- wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -O $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2   
-- tar -xvf $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C $PWD/travis-phantomjs   
-- export PATH=$PWD/travis-phantomjs:$PATH
+install:
+- 'wget http://stedolan.github.io/jq/download/linux64/jq'
+- 'chmod +x ./jq'
+- 'sudo cp jq /usr/bin'
 script:
-- chmod +x ./gradlew
+- ./gradlew build shadowJar
 after_success:
 - 'if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then exit; fi'
 - 'if [ ${TRAVIS_BRANCH} != "master" ]; then exit; fi'
-- 'if [[ $(git log --format=%B -n 1 $TRAVIS_COMMIT) == *"build-ignore"* ]]; then exit; fi'
-- 'IS_UNSTABLE=`cat travis-unstable.txt`'
-- 'TARGET_VER=`cat travis-targetversion.txt`'
-- 'CHANGELOG=`cat travis-changelog.txt`'
-- 'BUILD_NUMBER=$(phantomjs buildnumber.js ${IS_UNSTABLE} ${TARGET_VER})'
+- 'if [[ $(git log --format=%B -n 1 $TRAVIS_COMMIT) == *"[ci ignore]"* ]]; then exit; fi'
+- 'MGC_API=$(cat apiver.txt)'
+- 'BUILD_NUMBER=$(curl "https://api.github.com/repos/minigamecore/minigamecore/tags" | jq ".[0].name" | tr -d "\"")'
+- 'BUILD_NUMBER=$((BUILD_NUMBER+1))'
+- 'COMMIT_MESSAGE=$(curl "https://api.github.com/repos/minigamecore/minigamecore/commits/${TRAVIS_COMMIT}" | jq ".commit.message" | tr -d "\"")'
+- 'mv ${TRAVIS_BUILD_DIR}/build/libs/MinigameCore-{all,${MGC_API}-${BUILD_NUMBER}}.jar'
 - 'curl -v -X POST -d "{\"tag\": \"${BUILD_NUMBER}\",\"message\": \"MinigameCore Build ${BUILD_NUMBER}\",\"object\": \"${TRAVIS_COMMIT}\",\"type\": \"commit\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/MinigameCore/MinigameCore/git/tags"'
 - 'curl -v -X POST -d "{\"ref\": \"refs/tags/${BUILD_NUMBER}\",\"sha\": \"${TRAVIS_COMMIT}\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/MinigameCore/MinigameCore/git/refs"'
-- 'curl -v -X POST -d "{\"tag_name\": \"${BUILD_NUMBER}\",\"target_commitish\": \"master\",\"name\": \"MinigameCore Build ${BUILD_NUMBER}\",\"prerelease\": ${IS_UNSTABLE},\"body\": \"${CHANGELOG}\" }" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/MinigameCore/MinigameCore/releases"'
+- 'curl -v -X POST -d "{\"tag_name\": \"${BUILD_NUMBER}\",\"target_commitish\": \"master\",\"name\": \"MinigameCore Build ${BUILD_NUMBER}\", \"body\": \"${COMMIT_MESSAGE}\r\n\r\n**MinigameCore API:** ${MGC_API}\"}" --header "Content-Type:application/json" -u Flibio:${GITHUB_OAUTH} "https://api.github.com/repos/MinigameCore/MinigameCore/releases"'
+- 'RELASE_ID=$(curl "https://api.github.com/repos/minigamecore/minigamecore/releases/latest" | jq ".id" | tr -d "\"")'
+- 'curl -v -X POST --data-binary @${HOME}/build/${TRAVIS_REPO_SLUG}/build/libs/MinigameCore-${MGC_API}-${BUILD_NUMBER}.jar --header "Content-Type:application/octet-stream" -u Flibio:${GITHUB_OAUTH} "https://uploads.github.com/repos/MinigameCore/MinigameCore/releases/${RELASE_ID}/assets?name=MinigameCore-${MGC_API}-${BUILD_NUMBER}.jar"'

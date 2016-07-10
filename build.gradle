@@ -13,9 +13,12 @@ plugins {
 defaultTasks 'clean', 'build', 'shadowJar'
 
 build {
-    logger.lifecycle('Setting API version to ' + project.minigamecoreapi)
+    logger.lifecycle('MinigameCoreAPI: ' + project(':MinigameCoreAPI').version)
+    logger.lifecycle('SpongeAPI: ' + project(':MinigameCoreAPI').spongeapi)
     def apifile = new File('apiver.txt')
-    apifile.text = project.minigamecoreapi.minus("-SNAPSHOT")
+    apifile.text = project(':MinigameCoreAPI').version.minus("-SNAPSHOT")
+    def sapifile = new File('sapiver.txt')
+    sapifile.text = project(':MinigameCoreAPI').spongeapi.minus("-SNAPSHOT")
 }
 
 repositories {
@@ -27,7 +30,7 @@ repositories {
 
 dependencies {
     compile 'org.spongepowered:spongeapi:' + project.spongeapi
-    compile 'com.github.MinigameCore:MinigameCoreAPI:' +  project.minigamecoreapi
+    compile project(':MinigameCoreAPI')
 }
 
 spotless {

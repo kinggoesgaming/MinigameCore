@@ -1,0 +1,3 @@
+[submodule "MinigameCoreAPI"]
+	path = MinigameCoreAPI
+	url = https://github.com/MinigameCore/MinigameCoreAPI

@@ -64,6 +64,6 @@ shadowJar {
     version = null
     configurations = [project.configurations.compile]
     dependencies {
-        include(dependency('com.github.MinigameCore:MinigameCoreAPI'))
+        include(dependency('io.github.minigamecore:MinigameCoreAPI'))
     }
 }

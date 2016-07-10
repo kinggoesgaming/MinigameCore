@@ -40,7 +40,7 @@ import java.nio.file.Path;
 /*
  * The main class for MinigameCore
  */
-@Plugin(authors = {"Flibio"}, id = "minigamecore", url = "http://minigamecore.github.io/docs/")
+@Plugin(authors = {"Flibio"}, id = "minigamecore", url = "http://minigamecore.github.io/Docs/")
 public final class MinigameCore {
 
     private final Path configDir;

@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of MinigameCore, licensed under the MIT License (MIT).
  *
  * Copyright (c) 2016 - 2016 MinigameCore
@@ -22,6 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package io.github.minigamecore.plugin;
 
 import static org.spongepowered.api.event.Order.EARLY;

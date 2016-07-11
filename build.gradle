@@ -37,6 +37,10 @@ dependencies {
     compile project(':MinigameCoreAPI')
 }
 
+license {
+    header = file('MinigameCoreAPI/gradle/HEADER.txt')
+}
+
 spongestart {
     eula true
 }

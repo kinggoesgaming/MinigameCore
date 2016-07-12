@@ -15,8 +15,8 @@ Follow the steps below to ensure your repository is clone correctly.
 1. Navigate to the [MinigameCore Repository](https://github.com/MinigameCore/MinigameCore) and click the
 'fork' button in the upper right corner.
 
-1. Clone the repository to your computer, using the command
-`git clone https://github.com/USERNAME/MinigameCore.git --recursive`. Replace `USERNAME` with your GitHub username.
+1. Run `git clone https://github.com/USERNAME/MinigameCore.git --recursive`
+ - Be sure to replace `USERNAME` with your GitHub username. This will clone your fork to your computer.
 
 ## Contributing
 

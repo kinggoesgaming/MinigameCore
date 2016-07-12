@@ -2,14 +2,26 @@
 [![Travis]](https://travis-ci.org/MinigameCore/MinigameCore)
 [![Docs]](http://minigamecore.github.io/Docs/)
 [![Gitter]](https://gitter.im/MinigameCore/MinigameCore)
-[![Issues]](http://www.github.com/MinigameCore/MinigameCore/issues/) [![Downloads]](http://www.github.com/MinigameCore/MinigameCore/releases/)
+[![Issues]](http://www.github.com/MinigameCore/MinigameCore/issues/)
+[![Downloads]](http://www.github.com/MinigameCore/MinigameCore/releases/)
 
-MinigameCore is a framework for [Sponge](https://www.spongepowered.org/) that provides functions to make minigame development faster.
-MinigameCore is licensed under the [MIT License](https://tldrlegal.com/license/mit-license).
+MinigameCore is a framework for [Sponge](https://www.spongepowered.org/) that provides functions to make minigame
+development faster. MinigameCore is licensed under the [MIT License](https://tldrlegal.com/license/mit-license).
+
+## Cloning
+
+Follow the steps below to ensure your repository is clone correctly.
+
+1. Navigate to the [MinigameCore Repository](https://github.com/MinigameCore/MinigameCore) and click the
+'fork' button in the upper right corner.
+
+1. Clone the repository to your computer, using the command
+`git clone https://github.com/USERNAME/MinigameCore.git --recursive`. Replace `USERNAME` with your GitHub username.
 
 ## Contributing
 
-If you would like to contribute code to the MinigameCore project, check out the [contributing](http://minigamecore.github.io/Docs/contributing.html) section on our Docs!
+If you would like to contribute code to the MinigameCore project, check out the
+[contributing](http://minigamecore.github.io/Docs/contributing.html) section on our Docs!
 
 [License]: https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat-square
 [Issues]: https://img.shields.io/github/issues/MinigameCore/MinigameCore.svg?style=flat-square

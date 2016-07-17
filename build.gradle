@@ -20,7 +20,7 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-defaultTasks 'shadowJar'
+defaultTasks 'shadowJar', 'travisFiles'
 
 repositories {
     mavenCentral()
@@ -30,7 +30,6 @@ repositories {
     }
 }
 
-apply from: 'gradle/travis/files.gradle'
 apply from: 'MinigameCoreAPI/gradle/shared.gradle'
 
 dependencies {
@@ -55,4 +54,21 @@ shadowJar {
     dependencies {
         include(dependency(':MinigameCoreAPI'))
     }
+}
+
+task travisFiles {
+    dependsOn shadowJar
+
+    def dir = new File('.travis')
+    if(!dir.exists()) {
+        dir.mkdirs()
+    }
+
+    logger.lifecycle('MinigameCoreAPI: ' + project(':MinigameCoreAPI').version)
+    def apifile = new File('.travis/apiver.txt')
+    apifile.text = project(':MinigameCoreAPI').version.minus("-SNAPSHOT")
+
+    logger.lifecycle('SpongeAPI: ' + project(':MinigameCoreAPI').spongeapi)
+    def sapifile = new File('.travis/sapiver.txt')
+    sapifile.text = project(':MinigameCoreAPI').spongeapi.minus("-SNAPSHOT")
 }

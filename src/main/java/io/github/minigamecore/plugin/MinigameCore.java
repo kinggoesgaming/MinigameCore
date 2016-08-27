@@ -25,25 +25,33 @@
 
 package io.github.minigamecore.plugin;
 
+import static io.github.minigamecore.plugin.config.Configurations.getAll;
 import static org.spongepowered.api.Sponge.getServiceManager;
 import static org.spongepowered.api.event.Order.EARLY;
+import static org.spongepowered.api.event.Order.LATE;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.github.minigamecore.api.MinigameService;
+import io.github.minigamecore.api.util.config.ConfigurationManager;
+import io.github.minigamecore.plugin.config.ConfigModule;
+import io.github.minigamecore.plugin.config.ConfigurationManagerImpl;
+import io.github.minigamecore.plugin.config.Configurations;
 import io.github.minigamecore.plugin.service.MinigameServiceImpl;
 import org.slf4j.Logger;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import java.nio.file.Path;
 
 /*
- * The main class for MinigameCore
+ * The main class for MinigameCore.
  */
 @Plugin(authors = {"Flibio"}, id = "minigamecore", url = "http://minigamecore.github.io/Docs/")
 public final class MinigameCore {
@@ -65,10 +73,37 @@ public final class MinigameCore {
     public void onPreInitializationEarly(final GamePreInitializationEvent event) {
         getLogger().info("Starting " + getPluginContainer().getId());
 
+        Configurations.register();
+
         // Setup minigameservice
-        Module module = binder -> binder.bind(MinigameService.class).to(MinigameServiceImpl.class);
+        Module module = binder -> {
+            binder.bind(ConfigurationManager.class).to(ConfigurationManagerImpl.class);
+            binder.bind(MinigameService.class).to(MinigameServiceImpl.class);
+            binder.install(new ConfigModule());
+        };
+
         defaultInjector = defaultInjector.createChildInjector(module);
         getServiceManager().setProvider(this, MinigameService.class, defaultInjector.getInstance(MinigameService.class));
+
+        getAll().forEach((configuration -> defaultInjector.getInstance(ConfigurationManager.class).register(this, configuration)));
+
+        ((ConfigurationManagerImpl) defaultInjector.getInstance(ConfigurationManager.class)).loadAllConfigurations();
+    }
+
+    @Listener(order = LATE)
+    public void onPreInitLate(final GamePreInitializationEvent event) {
+        ((ConfigurationManagerImpl) defaultInjector.getInstance(ConfigurationManager.class)).saveAllConfigurations();
+    }
+
+    @Listener(order = LATE)
+    public void onStoppingLate(final GameStoppingEvent event) {
+        ((ConfigurationManagerImpl) getServiceManager().provideUnchecked(MinigameService.class).getConfigurationManager()).saveAllConfigurations();
+    }
+
+    // TODO move this to another class later
+    @Listener
+    public void onReload(final GameReloadEvent event) {
+        ((ConfigurationManagerImpl) defaultInjector.getInstance(ConfigurationManager.class)).loadAllConfigurations();
     }
 
     public Path getConfigDir() {

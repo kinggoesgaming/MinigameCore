@@ -32,8 +32,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
 import io.github.minigamecore.api.MinigameService;
-import io.github.minigamecore.plugin.MinigameCore;
-import org.slf4j.Logger;
+import io.github.minigamecore.api.util.config.ConfigurationManager;
 
 import javax.annotation.Nonnull;
 
@@ -43,13 +42,12 @@ import javax.annotation.Nonnull;
 @Singleton // Only one instance should be available
 public final class MinigameServiceImpl implements MinigameService {
 
-    private final Logger logger; // TODO Will work on this when we get some configuration stuff done
     private Injector injector;
+    private final ConfigurationManager configManager;
 
-    @SuppressWarnings("deprecation")
     @Inject
-    private MinigameServiceImpl(MinigameCore plugin) {
-        logger = plugin.getLogger();
+    private MinigameServiceImpl(ConfigurationManager configManager) {
+        this.configManager = configManager;
     }
 
     @Nonnull
@@ -70,6 +68,12 @@ public final class MinigameServiceImpl implements MinigameService {
         checkNotNull(modules, "module");
 
         injector = injector.createChildInjector(modules);
+    }
+
+    @Nonnull
+    @Override
+    public ConfigurationManager getConfigurationManager() {
+        return configManager;
     }
 
 }

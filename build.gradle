@@ -45,30 +45,10 @@ spongestart {
 }
 
 shadowJar {
-    dependsOn build
+    archiveName = "MinigameCore-${project(':MinigameCoreAPI').spongeapi.minus("-SNAPSHOT")}-BUILD.jar"
 
-    classifier 'all'
-    baseName project.name
-    version = null
     configurations = [project.configurations.compile]
     dependencies {
         include(dependency(':MinigameCoreAPI'))
     }
-}
-
-task travisFiles {
-    dependsOn shadowJar
-
-    def dir = new File('.travis')
-    if(!dir.exists()) {
-        dir.mkdirs()
-    }
-
-    logger.lifecycle('MinigameCoreAPI: ' + project(':MinigameCoreAPI').version)
-    def apifile = new File('.travis/apiver.txt')
-    apifile.text = project(':MinigameCoreAPI').version.minus("-SNAPSHOT")
-
-    logger.lifecycle('SpongeAPI: ' + project(':MinigameCoreAPI').spongeapi)
-    def sapifile = new File('.travis/sapiver.txt')
-    sapifile.text = project(':MinigameCoreAPI').spongeapi.minus("-SNAPSHOT")
 }

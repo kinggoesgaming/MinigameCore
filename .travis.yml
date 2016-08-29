@@ -11,20 +11,9 @@ notifications:
     on_success: change
     on_failure: always
     on_start: never
-install:
-- 'chmod +x ./.travis/install.sh'
-- './.travis/install.sh'
 script:
 - 'chmod +x ./gradlew'
-- './gradlew travisFiles'
+- './gradlew shadowJar'
 after_success:
-- 'echo "Setting some environment variables"'
-- 'export PULL_REQUEST=${TRAVIS_PULL_REQUEST}'
-- 'export BRANCH=${TRAVIS_BRANCH}'
-- 'export COMMIT=${TRAVIS_COMMIT}'
-- 'export BUILD_DIR=${TRAVIS_BUILD_DIR}'
-- 'export OAUTH=${GITHUB_OAUTH}'
-- 'export HOME_=${HOME}'
-- 'export REPO_SLUG=${TRAVIS_REPO_SLUG}'
-- 'chmod +x .travis/after_success.sh'
-- './.travis/after_success.sh'
+- 'chmod +x ./continuum.sh'
+- './continuum.sh'

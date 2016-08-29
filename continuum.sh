@@ -15,7 +15,7 @@ fi
 
 # Make sure this is not a pull request #
 
-if [[ ${PULL_REQUEST} != "false" ]]; then
+if [[ ${TRAVIS_PULL_REQUEST} != "false" ]]; then
     echo "Pull request detected, stopping script!"
     exit;
 fi

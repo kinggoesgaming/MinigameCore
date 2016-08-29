@@ -13,6 +13,13 @@ if [[ "${TRAVIS_BRANCH}" != "${BRANCH}" ]]; then
     exit;
 fi
 
+# Make sure this is not a pull request #
+
+if [[ ${PULL_REQUEST} != "false" ]]; then
+    echo "Pull request detected, stopping script!"
+    exit;
+fi
+
 # Install JQ #
 
 wget http://stedolan.github.io/jq/download/linux64/jq

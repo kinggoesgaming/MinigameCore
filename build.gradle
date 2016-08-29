@@ -20,7 +20,7 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-defaultTasks 'shadowJar', 'travisFiles'
+defaultTasks 'checkstyleMain', 'shadowJar'
 
 repositories {
     mavenCentral()
@@ -42,6 +42,10 @@ license {
 
 spongestart {
     eula true
+}
+
+jar {
+    onlyIf { false }
 }
 
 shadowJar {

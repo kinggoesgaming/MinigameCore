@@ -44,6 +44,7 @@ import io.github.minigamecore.plugin.util.logger.MinigameCoreLogger;
 import io.github.minigamecore.plugin.util.logger.MinigameCoreLoggerModule;
 import io.github.minigamecore.plugin.util.logger.MinigameCoreLoggerUtil;
 import io.github.minigamecore.plugin.util.manager.GuiceManagerImpl;
+import io.github.minigamecore.plugin.util.reflect.CatalogTypeApplier;
 import org.slf4j.Logger;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
@@ -106,6 +107,7 @@ public final class MinigameCore {
         ((GuiceManagerImpl)service.getGuiceManager()).setInjector(defaultInjector);
         logger = service.getGuiceManager().getInjector().getInstance(MinigameCoreLogger.class);
         service.getConfigurationManager().save(this);
+        service.getGuiceManager().getInjector().getInstance(CatalogTypeApplier.class).apply();
 
         Configurations.getAll().forEach(configuration -> defaultInjector.getInstance(ConfigurationManager.class).register(this, configuration));
 

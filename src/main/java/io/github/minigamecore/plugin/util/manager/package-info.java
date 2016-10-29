@@ -1,5 +1,5 @@
 /*
- * This file is part of MinigameCoreAPI, licensed under the MIT License (MIT).
+ * This file is part of MinigameCore, licensed under the MIT License (MIT).
  *
  * Copyright (c) 2016 - 2016 MinigameCore <http://minigamecore.github.io>
  * Copyright (c) Contributors

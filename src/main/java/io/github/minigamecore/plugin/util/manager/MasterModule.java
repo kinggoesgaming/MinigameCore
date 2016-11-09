@@ -23,19 +23,35 @@
  * THE SOFTWARE.
  */
 
-package io.github.minigamecore.plugin.config;
-
-import static io.github.minigamecore.plugin.config.Configurations.get;
+package io.github.minigamecore.plugin.util.manager;
 
 import com.google.inject.AbstractModule;
-import io.github.minigamecore.api.util.config.Configuration;
-import io.github.minigamecore.plugin.config.annotations.GlobalConfig;
+import io.github.minigamecore.api.MinigameService;
+import io.github.minigamecore.api.util.config.ConfigurationManager;
+import io.github.minigamecore.api.util.manager.GuiceManager;
+import io.github.minigamecore.plugin.config.ConfigurationManagerImpl;
+import io.github.minigamecore.plugin.config.ConfigurationModule;
+import io.github.minigamecore.plugin.service.MinigameServiceImpl;
+import io.github.minigamecore.plugin.util.logger.MinigameCoreLoggerModule;
 
-public final class ConfigModule extends AbstractModule {
+/**
+ * The main guice module.
+ *
+ * <p>
+ *     The only module that is not included here is the
+ *     {@link MinigameCoreLoggerModule} as it needs to be active before this
+ *     module is called.
+ * </p>
+ */
+public final class MasterModule extends AbstractModule {
 
-    @Override
     protected void configure() {
-        get("global").ifPresent(bind(Configuration.class).annotatedWith(GlobalConfig.class)::toInstance);
+        bind(ConfigurationManager.class).to(ConfigurationManagerImpl.class);
+        bind(GuiceManager.class).to(GuiceManagerImpl.class);
+
+        install(new ConfigurationModule());
+
+        bind(MinigameService.class).to(MinigameServiceImpl.class);
     }
 
 }

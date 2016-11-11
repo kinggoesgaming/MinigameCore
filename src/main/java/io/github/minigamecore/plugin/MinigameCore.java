@@ -32,18 +32,15 @@ import static org.spongepowered.api.event.Order.LATE;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Module;
 import io.github.minigamecore.api.MinigameService;
 import io.github.minigamecore.api.util.config.ConfigurationManager;
-import io.github.minigamecore.api.util.manager.GuiceManager;
-import io.github.minigamecore.plugin.config.ConfigModule;
 import io.github.minigamecore.plugin.config.ConfigurationManagerImpl;
 import io.github.minigamecore.plugin.config.Configurations;
-import io.github.minigamecore.plugin.service.MinigameServiceImpl;
 import io.github.minigamecore.plugin.util.logger.MinigameCoreLogger;
 import io.github.minigamecore.plugin.util.logger.MinigameCoreLoggerModule;
 import io.github.minigamecore.plugin.util.logger.MinigameCoreLoggerUtil;
 import io.github.minigamecore.plugin.util.manager.GuiceManagerImpl;
+import io.github.minigamecore.plugin.util.manager.MasterModule;
 import io.github.minigamecore.plugin.util.reflect.CatalogTypeApplier;
 import org.slf4j.Logger;
 import org.spongepowered.api.config.ConfigDir;
@@ -89,23 +86,15 @@ public final class MinigameCore {
 
         MinigameCoreLoggerUtil.createLogFile(this, now().toString(), getLogger()); // Creates logs/minigamecore/*.log files.
 
-        Module module = binder -> {
-            binder.install(new MinigameCoreLoggerModule());
-            getLogger().debug("Default logger no longer used.");
+        defaultInjector = defaultInjector.createChildInjector(binder -> binder.install(new MinigameCoreLoggerModule()));
+        logger = defaultInjector.getInstance(MinigameCoreLogger.class);
+        getLogger().debug("Default logger no longer used.");
 
-            // TODO Move this to a ManagersModule later
-            binder.bind(ConfigurationManager.class).to(ConfigurationManagerImpl.class);
-            binder.bind(GuiceManager.class).to(GuiceManagerImpl.class);
-            binder.install(new ConfigModule());
-            binder.bind(MinigameService.class).to(MinigameServiceImpl.class);
-        };
-
-        defaultInjector = defaultInjector.createChildInjector(module);
+        defaultInjector = defaultInjector.createChildInjector(binder -> binder.install(new MasterModule()));
 
         MinigameService service = defaultInjector.getInstance(MinigameService.class);
         getServiceManager().setProvider(this, MinigameService.class, service);
         ((GuiceManagerImpl)service.getGuiceManager()).setInjector(defaultInjector);
-        logger = service.getGuiceManager().getInjector().getInstance(MinigameCoreLogger.class);
         service.getConfigurationManager().save(this);
         service.getGuiceManager().getInjector().getInstance(CatalogTypeApplier.class).apply();
 

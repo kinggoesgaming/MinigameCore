@@ -29,6 +29,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.github.minigamecore.api.MinigameService;
+import io.github.minigamecore.api.module.MinigameModuleManager;
 import io.github.minigamecore.api.util.config.ConfigurationManager;
 import io.github.minigamecore.api.util.manager.GuiceManager;
 import io.github.minigamecore.plugin.util.logger.MinigameCoreLogger;
@@ -43,15 +44,10 @@ import javax.annotation.Nonnull;
 public final class MinigameServiceImpl implements MinigameService {
 
     private Injector injector;
-    private final ConfigurationManager configManager;
-    private final GuiceManager guiceManager;
+    @Inject private ConfigurationManager configManager;
+    @Inject private GuiceManager guiceManager;
+    @Inject private MinigameModuleManager minigameModuleManager;
     private final Logger logger = new MinigameCoreLogger("MinigameService");
-
-    @Inject
-    private MinigameServiceImpl(ConfigurationManager configManager, GuiceManager guiceManager) {
-        this.configManager = configManager;
-        this.guiceManager = guiceManager;
-    }
 
     @Nonnull
     @Override
@@ -65,5 +61,10 @@ public final class MinigameServiceImpl implements MinigameService {
         return guiceManager;
     }
 
+    @Nonnull
+    @Override
+    public MinigameModuleManager getMinigameModuleManager() {
+        return minigameModuleManager;
+    }
 
 }
